@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机图形学实验</title>
+    <link rel="stylesheet" href="../../css/styles_index.css">
+    <style>
+        /* 为实验页面添加特定样式 */
+        .experiments-header {
+            background: linear-gradient(135deg, #2c5364 0%, #203a43 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .experiments-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .experiments-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .experiment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .experiment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .experiment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #2c5364, #0f2027);
+        }
+
+        .experiment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .experiment-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .experiment-card p {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .experiment-card .btn {
+            background: linear-gradient(135deg, #2c5364 0%, #0f2027 100%);
+        }
+
+        .experiment-card .btn:hover {
+            box-shadow: 0 5px 15px rgba(44, 83, 100, 0.4);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2c5364;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .about {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-top: auto;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="experiments-header">
+        <div class="container">
+            <h1>计算机图形学实验</h1>
+            <p>探索图形学的奇妙世界</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <a href="../../index.html" class="back-link">← 返回主页</a>
+
+        <section class="projects">
+            <h2>实验列表</h2>
+            <div class="experiment-list">
+                <div class="experiment-card">
+                    <h3>实验1：基础图形绘制</h3>
+                    <p>学习使用WebGL绘制基本图形，包括三角形、四边形等，并掌握颜色设置方法。</p>
+                    <div class="project-links">
+                        <a href="实验1/index.html" class="btn">进入实验</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="about">
+        <h2>关于实验课程</h2>
+        <p>计算机图形学是计算机科学的一个重要分支，研究如何利用计算机生成、处理和显示图形。</p>
+            <p>通过这一系列实验，我们将从基础的图形绘制开始，逐步掌握图形变换、光照、纹理等高级技术。</p>
+    </section>
+
+    <footer>
+        <div class="container">
+            By <span class="neon-signature">SiiNouBeea</span>
+        </div>
+    </footer>
+</body>
+</html>
