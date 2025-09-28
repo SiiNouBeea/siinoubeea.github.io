@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Triangle Tessellation – Rotation & Level</title>
+<style>
+body{text-align:center;font-family:Arial}
+canvas{border:1px solid #999;display:block;margin:10px auto}
+select,input,button{font-size:16px;margin:4px}
+label{font-weight:bold}
+</style>
+
+<!-- ---------- 着色器 ---------- -->
+<script id="vertex-shader" type="x-shader/x-vertex">#version 300 es
+in vec4 vPosition;
+void main(){ gl_Position = vPosition; }
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">#version 300 es
+precision mediump float;
+out vec4 fColor;
+void main(){ fColor = vec4(1.0, 0.0, 0.0, 1.0); }
+</script>
+
+<!-- ---------- 库 ---------- -->
+<script src="common/webgl-utils.js"></script>
+<script src="common/initShaders.js"></script>
+<script src="common/gl-matrix-min.js"></script>
+
+<!-- ---------- 业务 ---------- -->
+<script src="js/e.js"></script>
+</head>
+
+<body>
+<h2>Triangle Tessellation</h2>
+<canvas id="gl-canvas" width="600" height="600"></canvas>
+
+<div>
+  细分层次：
+  <input type="range" id="level-slider" min="0" max="7" value="0"
+         oninput="updateLevel()">
+  <span id="levShow">0</span>
+
+  旋转角度：
+  <input type="range" id="angle-slider" min="0" max="360" value="60"
+         oninput="updateAngle()">
+  <span id="angShow">60°</span>
+  
+  扭转强度：
+      <input type="range" id="twist-slider" min="0" max="360" value="0" oninput="updateTwist()">
+      <span id="twistShow">0°</span><br>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+    <div><a href="index.html" style="color: #4da6ff; text-decoration: none;">回到主页</a></div>
+</div>
+</body>
+</html>
