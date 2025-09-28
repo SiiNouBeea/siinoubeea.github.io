@@ -3,127 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第一次实验作业</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #e0e0e0;
-            min-height: 100vh;
-        }
-        
-        h1 {
-            color: #ffffff;
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 300;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .task-list {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .task-item {
-            margin: 15px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border-left: 4px solid #4da6ff;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .task-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        }
-        
-        .task-item a {
-            text-decoration: none;
-            color: #4da6ff;
-            font-size: 18px;
-            font-weight: 500;
-            display: block;
-            transition: color 0.3s ease;
-        }
-        
-        .task-item a:hover {
-            color: #80ccff;
-            text-shadow: 0 0 8px rgba(77, 166, 255, 0.4);
-        }
-        
-        .task-description {
-            color: #b0b0b0;
-            margin-top: 8px;
-            font-size: 15px;
-        }
-        
-        /* 签名样式 */
-        .signature-container {
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 20px;
-        }
-        
-        .signature {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* 霓虹渐变签名样式 */
-        .neon-signature {
-            text-align: center;
-            background: linear-gradient(90deg,
-                #ff6b6b, #feca57, #48dbfb, #1dd1a1,
-                #f368e0, #ff9ff3, #54a0ff, #5f27cd);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-            animation: neonGradient 3s ease infinite;
-            font-weight: 700;
-            font-size: 0.9em;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        @keyframes neonGradient {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #2c5364;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-        }
-    </style>
 </head>
 <body>
-    <h1>第一次实验作业</h1>
-    <a href="../index.html" class="back-link">← 返回实验列表</a>
+    <header class="experiments-header">
+        <div class="container">
+            <h1>第一次实验作业</h1>
+            <a href="../index.html" class="back-link">← 返回实验列表</a>
+        </div>
+    </header>
     
     <div class="task-list">
         <div class="task-item">
