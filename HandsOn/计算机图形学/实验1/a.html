@@ -1,43 +1,57 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-		<link rel="icon" type="image/png" href="../../../img/logo.png">
-		<title>Chapter 1. First WebGL Demo</title>
-		<!-- 顶点着色器和片元着色器代码 -->
-		<script id="vertex-shader" type="x-shader/x-vertex">
-			#version 300 es
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
+    <title>Chapter 1. First WebGL Demo</title>
+    <!-- 着色器代码保持不变 -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
 
-			in vec4 vPosition;
+        in vec4 vPosition;
 
-			void main()
-			{
-				gl_Position = vPosition;
-			}
-		</script>
-		<script id="fragment-shader" type="x-shader/x-fragment">
-			#version 300 es
+        void main()
+        {
+            gl_Position = vPosition;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
 
-			precision mediump float;
+        precision mediump float;
 
-			out vec4  fColor;
+        out vec4  fColor;
 
-			void main()
-			{
-				fColor = vec4( 0.0, 0.0, 1.0, 1.0 );
-			}
-		</script>
-		<!-- 一组相关的JS库 -->
-		<script type="text/javascript" src="common/webgl-utils.js"></script>
-		<script type="text/javascript" src="common/initShaders.js"></script>
-		<script type="text/javascript" src="common/glMatrix-0.9.5.min.js"></script>
-		<!-- 绘制三角形的JS代码 -->
-		<script type="text/javascript" src="js/a.js"></script>
-	</head>
-	<body>
-		<canvas id="triangle-canvas" style="border:none;" width="500" height="500"></canvas>
-		<div style="text-align: center; margin-top: 20px;">
-			<div><a href="index.html" style="color: #4da6ff; text-decoration: none;">回到主页</a></div>
-		</div>
-	</body>
+        void main()
+        {
+            fColor = vec4( 0.0, 0.0, 1.0, 1.0 );
+        }
+    </script>
+    <!-- JS库保持不变 -->
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/glMatrix-0.9.5.min.js"></script>
+    <script type="text/javascript" src="js/a.js"></script>
+</head>
+<body>
+    <div class="experiment-page">
+        <h1 class="experiment-title">任务 A - 修改三角形颜色</h1>
+
+        <div class="experiment-description">
+            修改三角形的显示颜色，比如改成蓝色或绿色
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="triangle-canvas" class="experiment-canvas" width="500" height="500"></canvas>
+        </div>
+
+        <a href="index.html" class="experiment-back-button">返回上一页</a>
+    </div>
+
+    <div class="signature-container">
+        <p class="neon-signature">SiNouBeea</p>
+    </div>
+</body>
 </html>

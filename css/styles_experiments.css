@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -175,13 +175,14 @@ body {
 /* 关于部分样式 */
 .about {
     background: rgba(255, 255, 255, 0.08);
+    max-width: 800px;
     backdrop-filter: blur(10px);
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
-    margin: 40px 0;
+    margin: 0 auto;
 }
 
 .about h2 {
@@ -198,9 +199,9 @@ body {
 
 /* 签名样式 */
 .signature-container {
-    margin-top: 40px;
+    margin: 10px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .neon-signature {
@@ -263,11 +264,161 @@ footer {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     color: white;
     text-align: center;
-    padding: 15px 0;
+    padding: 5px 0; /* 从原来的 15px 减小到 5px */
     margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50px;
 }
 
 footer p {
     font-size: 1rem;
     opacity: 0.9;
+    margin: 0;
+}
+
+
+/* 项目展示区域样式 */
+.projects {
+    margin: 30px 0;
+}
+
+/* 大卡片容器样式 */
+.projects .task-item {
+    margin: 25px 0;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.projects .task-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 调整项目展示区域样式 */
+.projects {
+    margin: 20px 0;
+}
+
+/* 减小卡片尺寸 */
+.projects .task-item {
+    margin: 15px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.projects .task-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
+}
+
+/* 调整卡片标题样式 */
+.projects .section-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* 调整卡片描述文本样式 */
+.projects .task-item > p {
+    color: #b0b0b0;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 15px 0;
+}
+
+/* 调整按钮容器样式 */
+.projects .project-links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* 实验页面容器样式 */
+.experiment-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    min-height: 100vh;
+}
+
+/* 实验标题样式 */
+.experiment-title {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* 绘图窗口容器 */
+.canvas-container {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    min-width: 580px;
+}
+
+/* 实验描述样式 */
+.experiment-description {
+    color: #b0b0b0;
+    font-size: 1.1rem;
+    margin: 20px 0;
+    text-align: center;
+    line-height: 1.7;
+    max-width: 1200px;
+    min-width: 580px;
+}
+
+/* Canvas 元素样式 */
+.experiment-canvas {
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    display: block;
+}
+
+/* 实验页面返回按钮样式 */
+.experiment-back-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3a86cc, #4a96d9);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.experiment-back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58, 134, 204, 0.4);
 }

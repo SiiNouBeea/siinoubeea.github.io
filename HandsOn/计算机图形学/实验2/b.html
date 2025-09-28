@@ -2,13 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-  <link rel="icon" type="image/png" href="../../../img/logo.png">
+<link rel="icon" type="image/png" href="../../../img/logo.png">
+<link rel="stylesheet" href="../../../css/styles_experiments.css">
 <title>Sierpinski Gasket 2D/3D</title>
-<style>
-body{text-align:center;font-family:Arial}
-canvas{border:1px solid #999;display:block;margin:10px auto}
-select,input,button{font-size:16px;margin:4px}
-</style>
 
 <!-- ---------------- 彩色 3D 着色器（修改为支持 MVP 矩阵） ---------------- -->
 <script id="vertex-shader" type="x-shader/x-vertex">#version 300 es
@@ -51,23 +47,40 @@ void main(){ fColor = vec4(1.0,0.0,0.0,1.0); }
 </head>
 
 <body>
-<h2>Sierpinski Gasket – <span id="dimText">2D Triangle</span></h2>
-<canvas id="gl-canvas" width="600" height="600"></canvas>
+<div class="experiment-page">
+    <h1 class="experiment-title">实验要求1：Sierpinski Gasket图案绘制</h1>
 
-<div>
-  维度：
-  <select id="dimSel" onchange="syncUI()">
-    <option value="2">2D Triangle</option>
-    <option value="3">3D Tetrahedron</option>
-  </select>
 
-  细分层次：
-  <input type="range" id="levelSlider" min="0" max="7" value="3"
-         oninput="syncUI()">
-  <span id="levShow">3</span>
-  <div style="text-align: center; margin-top: 20px;">
-    <div><a href="index.html" style="color: #4da6ff; text-decoration: none;">回到主页</a></div>
-  </div>
+        <div class="experiment-description">
+                <div class="task-description">任务 A - 要求在网页上添加交互式控件，输入剖分的层次(0-7)，绘制对应图案。</div>
+                <div class="task-description">任务 A - 绘制三维效果的Sierpinski Gasket, 要求同任务a，也可与任务a集成在同一个界面中。</div>
+        </div>
+
+
+    <div class="canvas-container">
+        <h2 style="color: #ffffff; margin-bottom: 15px;">Sierpinski Gasket – <span id="dimText">2D Triangle</span></h2>
+        <canvas id="gl-canvas" class="experiment-canvas" width="600" height="600"></canvas>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 12px; padding: 20px; margin: 20px 0; max-width: 600px;">
+        <div>
+            维度：
+            <select id="dimSel" onchange="syncUI()" style="padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+                <option value="2">2D Triangle</option>
+                <option value="3">3D Tetrahedron</option>
+            </select>
+
+            细分层次：
+            <input type="range" id="levelSlider" min="0" max="7" value="3"
+                   oninput="syncUI()" style="vertical-align: middle;">
+            <span id="levShow">3</span>
+        </div>
+    </div>
+
+    <a href="index.html" class="experiment-back-button">返回上一页</a>
 </div>
+    <div class="signature-container">
+        <p class="neon-signature">SiNouBeea</p>
+    </div>
 </body>
 </html>
