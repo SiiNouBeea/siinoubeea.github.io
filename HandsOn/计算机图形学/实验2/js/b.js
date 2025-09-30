@@ -6,14 +6,12 @@ let level = 3;
 let dim   = 2;
 let rotX  = -0.4, rotY = 0;
 
-/* 2D 初始三角形 */
 const tri2D = [
     vec3.fromValues(-1,-1,0),
     vec3.fromValues( 0, 1,0),
     vec3.fromValues( 1,-1,0)
 ];
 
-/* 3D 四面体顶点 */
 const tet3D = [
     vec3.fromValues( 0.0000, 0.0000, -1.0000),
     vec3.fromValues( 0.0000, 0.9428, 0.3333),
@@ -26,7 +24,6 @@ window.onload = () => {
     gl = canvas.getContext("webgl2", {antialias:true});
     if(!gl){ alert("WebGL2 unavailable"); return; }
 
-    /* 编译两套程序 */
     program2D = initShaders(gl, "vs2d", "fs2d");
     program3D = initShaders(gl, "vertex-shader", "fragment-shader");
 
@@ -35,7 +32,6 @@ window.onload = () => {
     gl.clearColor(1,1,1,1);
     gl.enable(gl.DEPTH_TEST);
 
-    /* 保留原鼠标拖拽 */
     canvas.onmousemove = e => {
         if(e.buttons){
             rotY += e.movementX * 0.01;
@@ -58,7 +54,6 @@ function syncUI(){
 
 function redraw(){
     if(dim === 2){
-        /* 2D 红色三角形，原逻辑不变 */
         gl.useProgram(program2D);
         const pts = [];
         gasket2D(tri2D[0],tri2D[1],tri2D[2], level, pts);
@@ -72,10 +67,8 @@ function redraw(){
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLES, 0, pts.length/3);
     }else{
-        /* 3D 彩色四面体，采用 d.html 的彩色方案 */
         gl.useProgram(program3D);
 
-        // 使用与 d.js 相同的数据结构和渲染方式
         let points = [];
         let colors = [];
 
@@ -123,7 +116,6 @@ function redraw(){
 }
 
 
-/* 2D 递归 */
 function gasket2D(a,b,c,depth,out){
     if(depth===0){
         out.push(a[0],a[1],a[2], b[0],b[1],b[2], c[0],c[1],c[2]);
@@ -137,9 +129,7 @@ function gasket2D(a,b,c,depth,out){
     gasket2D(ac,bc,c, depth,out);
 }
 
-// 从 d.js 复制的函数
 function triangle(a, b, c, color, points, colors) {
-    // add colors and vertices for one triangle
     var baseColor = [
         1.0, 0.0, 0.0, 1.0,
         0.0, 1.0, 0.0, 1.0,
@@ -174,7 +164,6 @@ function tetra(a, b, c, d, points, colors) {
 }
 
 function divideTetra(a, b, c, d, count, points, colors) {
-    // check for end of recursion
     if (count == 0) {
         tetra(a, b, c, d, points, colors);
     } else {

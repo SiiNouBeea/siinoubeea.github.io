@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
+    <title>Chapter 3. 2D 图形变换实验</title>
+
+    <!-- ---------- 着色器 ---------- -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+        attribute vec2 aPos;
+        uniform float uRot;
+        uniform vec2 uTrans;
+        uniform vec2 uScale;
+        uniform vec3 uColor;
+        varying vec3 vColor;
+
+        void main(){
+            float c = cos(uRot);
+            float s = sin(uRot);
+
+            vec2 p = aPos * uScale;
+
+            p = vec2(
+                c * p.x - s * p.y,
+                s * p.x + c * p.y
+            );
+
+            p += uTrans;
+
+            gl_Position = vec4(p, 0.0, 1.0);
+            vColor = uColor;
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 vColor;
+
+        void main() {
+            gl_FragColor = vec4(vColor, 1.0);
+        }
+    </script>
+
+    <!-- ---------- 库 ---------- -->
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="js/a.js"></script>
+</head>
+<body onload="init2D()">
+    <div class="experiment-page">
+        <h1 class="experiment-title">实验要求 - 2D 图形变换实验</h1>
+
+        <div class="experiment-description">
+            参照旋转的正方形示例，实现一个完整的基于Web的二维图形变换应用，包括平移、旋转、缩放等功能
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="glcanvas" class="experiment-canvas" width="600" height="600">不支持 Canvas</canvas>
+        </div>
+
+        <!-- 添加的整体操作框容器 -->
+        <div class="controls-wrapper">
+            <h3 style="color: #ffffff; margin-top: 0; text-align: center;">图形变换控制面板</h3>
+            <!-- 修改为网格布局的控件容器 -->
+            <div class="controls-grid">
+                <div class="control-group">
+                    <legend>图形</legend>
+                    <select id="shapeSel">
+                        <option value="square">正方形</option>
+                        <option value="triangle">三角形</option>
+                        <option value="circle">圆形</option>
+                    </select>
+                    <button id="btnReset">重置画板</button>
+                </div>
+
+                <div class="control-group">
+                    <legend>颜色</legend>
+                    <label>R</label> 0<input id="colR" type="range" min="0" max="100" value="100">100<br>
+                    <label>G</label> 0<input id="colG" type="range" min="0" max="100" value="0">100<br>
+                    <label>B</label> 0<input id="colB" type="range" min="0" max="100" value="0">100
+                </div>
+
+                <div class="control-group">
+                    <legend>平移</legend>
+                    <label>X</label> -100<input id="tx" type="range" min="-100" max="100" value="0">100<br>
+                    <label>Y</label> -100<input id="ty" type="range" min="-100" max="100" value="0">100
+                </div>
+
+                <div class="control-group">
+                    <div class="control-group.legend">自动旋转</div>
+                    <label><input type="checkbox" id="autoX"> 启用</label>
+                    <label>
+                        速度 <input id="speedX" type="range" min="0" max="100" value="0">
+                    </label>
+                    <button id="btnDirX">反向</button>
+                </div>
+
+                <div class="control-group">
+                    <legend>缩放（按轴）</legend>
+                    <label>X</label> 10<input id="sx" type="range" min="10" max="200" value="100">200<br>
+                    <label>Y</label> 10<input id="sy" type="range" min="10" max="200" value="100">200
+                </div>
+            </div>
+        </div>
+
+        <a href="index.html" class="experiment-back-button">返回上一页</a>
+    </div>
+
+    <div class="signature-container">
+        <p class="neon-signature">SiNouBeea</p>
+    </div>
+</body>
+</html>

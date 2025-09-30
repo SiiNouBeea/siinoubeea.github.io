@@ -106,11 +106,11 @@ function tessellaTriangle(a, b, c){
 
     const an = vec3.create(), bn = vec3.create(), cn = vec3.create();
 
-    if(!twist){   // 仅整体旋转
+    if(!twist){
         vec3.rotateZ(an, a, zer, radRot);
         vec3.rotateZ(bn, b, zer, radRot);
         vec3.rotateZ(cn, c, zer, radRot);
-    }else{        // 实验 e：距离加权扭转
+    }else{
         const da = Math.hypot(a[0], a[1]),
               db = Math.hypot(b[0], b[1]),
               dc = Math.hypot(c[0], c[1]);
@@ -123,13 +123,11 @@ function tessellaTriangle(a, b, c){
         vec3.set(cn,
             c[0]*Math.cos(dc*radTwist) - c[1]*Math.sin(dc*radTwist),
             c[0]*Math.sin(dc*radTwist) + c[1]*Math.cos(dc*radTwist), 0);
-        // 再整体旋转
         vec3.rotateZ(an, an, zer, radRot);
         vec3.rotateZ(bn, bn, zer, radRot);
         vec3.rotateZ(cn, cn, zer, radRot);
     }
 
-    // 输出 6 顶点（线框）
     points.push(an[0],an[1],an[2], bn[0],bn[1],bn[2],
                 bn[0],bn[1],bn[2], cn[0],cn[1],cn[2],
                 cn[0],cn[1],cn[2], an[0],an[1],an[2]);
