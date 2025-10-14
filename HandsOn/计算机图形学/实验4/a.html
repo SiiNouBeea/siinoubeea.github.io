@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
+    <title>旋转的立方体</title>
+    
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
+        in vec4 vPosition;
+        in vec4 vColor;
+        out vec4 aColor;
+
+        uniform float thetaX; // X轴旋转角度
+        uniform float thetaY; // Y轴旋转角度
+        uniform float thetaZ; // Z轴旋转角度
+
+        void main() {
+            // X轴旋转
+            float uX = cos(thetaX);
+            float vX = sin(thetaX);
+            vec4 rotatedX = vec4(
+                vPosition.x,
+                vPosition.y * uX - vPosition.z * vX,
+                vPosition.y * vX + vPosition.z * uX,
+                vPosition.w
+            );
+
+            // Y轴旋转
+            float uY = cos(thetaY);
+            float vY = sin(thetaY);
+            vec4 rotatedY = vec4(
+                rotatedX.x * uY + rotatedX.z * vY,
+                rotatedX.y,
+                -rotatedX.x * vY + rotatedX.z * uY,
+                rotatedX.w
+            );
+
+            // Z轴旋转
+            float uZ = cos(thetaZ);
+            float vZ = sin(thetaZ);
+            vec4 rotatedZ = vec4(
+                rotatedY.x * uZ - rotatedY.y * vZ,
+                rotatedY.x * vZ + rotatedY.y * uZ,
+                rotatedY.z,
+                rotatedY.w
+            );
+
+            gl_Position = rotatedZ;
+            aColor = vColor;
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
+        precision mediump float;
+        in vec4 aColor;
+        out vec4 fColor;
+
+        void main() {
+            fColor = aColor;
+        }
+    </script>
+	
+	<script type="text/javascript" src="common/webgl-utils.js"></script>
+	<script type="text/javascript" src="common/initShaders.js"></script>
+	<script type="text/javascript" src="common/gl-matrix-min.js"></script>
+
+    <script type="text/javascript" src="js/a.js"></script>
+</head>
+<body onload="initCube()">
+    <div class="experiment-page">
+        <h1 class="experiment-title">实验4 - 旋转的立方体</h1>
+
+        <div class="experiment-description">
+            实现教材上的例题代码，通过三个按键选择旋转方向，绘制旋转的立方体，并添加平移和缩放控制
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gl-canvas" class="experiment-canvas" width="600" height="600">
+                你的浏览器不支持HTML5 canvas元素
+            </canvas>
+        </div>
+
+        <div class="controls-wrapper">
+            <h3 style="color: #ffffff; margin-top: 0; text-align: center;">立方体控制面板</h3>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <legend>旋转控制</legend>
+                    <button id="xbutton" onclick="changeAxis('x')">X轴旋转</button>
+                    <button id="ybutton" onclick="changeAxis('y')">Y轴旋转</button>
+                    <button id="zbutton" onclick="changeAxis('z')">Z轴旋转</button>
+                </div>
+
+                <div class="control-group">
+                    <legend>其他操作</legend>
+                    <button id="clearbutton" onclick="clearCanvas()">清除场景</button>
+                    <input type="color" id="colorPicker" value="#FF0000" onchange="updateColor()" 
+                           style="width: 100%; height: 40px; margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <a href="index.html" class="experiment-back-button">返回上一页</a>
+    </div>
+
+    <div class="signature-container">
+        <p class="neon-signature">SiNouBeea</p>
+    </div>
+</body>
+</html>

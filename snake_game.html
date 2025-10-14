@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇游戏</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        #startBtn, #restartBtn {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            margin: 20px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        #startBtn:hover, #restartBtn:hover {
+            background: #45a049;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        #gameOver {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            text-align: center;
+            min-width: 300px;
+        }
+
+        #gameOver p {
+            font-size: 1.2rem;
+            margin: 0 0 1rem 0;
+            color: #333;
+        }
+
+        canvas {
+            border: 4px solid #2c3e50;
+            border-radius: 8px;
+            background: #f8f9fa;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .glow {
+            animation: glowPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 15px var(--glow-color)); }
+            50% { filter: drop-shadow(0 0 35px var(--glow-color)); }
+            100% { filter: drop-shadow(0 0 15px var(--glow-color)); }
+        }
+    </style>
+</head>
+<body>
+    <button id="startBtn">开始游戏</button>
+    <div id="gameOver">
+        <p>游戏结束！得分：<span id="finalScore"></span></p>
+        <button id="restartBtn">重新开始</button>
+    </div>
+    <p>当前分数：<span id="nowScore"></span></p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const CELL_SIZE = 20;
+        const CANVAS_WIDTH = 600;
+        const CANVAS_HEIGHT = 400;
+        const NORMAL_SPEED = 200;
+        const BOOST_SPEED = 100;
+        const BOOST_DURATION = 5000;
+        const BASE_BLUE_PROBABILITY = 0.03; // 基础生成概率
+        const BLUE_BLOCK_LIFESPAN = 40; // 蓝色方块持续步数
+
+        class SnakeGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.nowScore = document.getElementById('nowScore');
+                this.ctx = this.canvas.getContext('2d');
+                this.startBtn = document.getElementById('startBtn');
+                this.gameOverDiv = document.getElementById('gameOver');
+                this.restartBtn = document.getElementById('restartBtn');
+                this.finalScoreSpan = document.getElementById('finalScore');
+
+                this.snake = [{ x: 10, y: 10 }];
+                this.direction = 'right';
+                this.nextDirection = 'right';
+                this.apple = this.generateFood(false);
+                this.blueBlock = null;
+                this.blueBlockLifespan = 0;
+                this.score = 0;
+                this.gameLoop = null;
+                this.isGameRunning = false;
+                this.isBoosting = false;
+                this.boostEndTime = 0;
+                this.lastGlowUpdate = 0;
+                this.glowColor = 'rgba(0, 255, 25, 0.8)';
+
+                this.bindEvents();
+                this.nowScore.textContent = this.score; // 初始化显示分数
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => this.startGame());
+                this.restartBtn.addEventListener('click', () => this.restartGame());
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+            }
+
+            startGame() {
+                this.isGameRunning = true;
+                this.startBtn.style.display = 'none';
+                this.gameOverDiv.style.display = 'none';
+                this.resetGameState();
+                this.updateGame();
+            }
+
+            restartGame() {
+                this.isGameRunning = true;
+                this.gameOverDiv.style.display = 'none';
+                this.resetGameState();
+                clearInterval(this.gameLoop);
+                this.updateGame();
+            }
+
+            resetGameState() {
+                this.snake = [{ x: 10, y: 10 }];
+                this.direction = 'right';
+                this.nextDirection = 'right';
+                this.apple = this.generateFood(false);
+                this.blueBlock = null;
+                this.blueBlockLifespan = 0;
+                this.score = 0;
+                this.isBoosting = false;
+                this.boostEndTime = 0;
+                this.nowScore.textContent = this.score; // 重置分数显示
+            }
+
+            generateFood(isBlue) {
+                let x, y;
+                do {
+                    x = Math.floor(Math.random() * (CANVAS_WIDTH / CELL_SIZE));
+                    y = Math.floor(Math.random() * (CANVAS_HEIGHT / CELL_SIZE));
+                } while (this.snake.some(segment => segment.x === x && segment.y === y));
+                return { x, y, isBlue };
+            }
+
+            handleKeyPress(e) {
+                if (!this.isGameRunning) return;
+                switch (e.key) {
+                    case 'ArrowUp': if (this.direction !== 'down') this.nextDirection = 'up'; break;
+                    case 'ArrowDown': if (this.direction !== 'up') this.nextDirection = 'down'; break;
+                    case 'ArrowLeft': if (this.direction !== 'right') this.nextDirection = 'left'; break;
+                    case 'ArrowRight': if (this.direction !== 'left') this.nextDirection = 'right'; break;
+                }
+            }
+
+            checkCollision() {
+                const head = this.snake[0];
+                // 屏幕边缘碰撞
+                if (head.x < 0 || head.x >= CANVAS_WIDTH / CELL_SIZE || head.y < 0 || head.y >= CANVAS_HEIGHT / CELL_SIZE) {
+                    return true;
+                }
+                // 自身碰撞
+                return this.snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
+            }
+
+            updateGame() {
+                if (!this.isGameRunning) return;
+
+                // 更新方向
+                this.direction = this.nextDirection;
+
+                // 移动蛇
+                const head = { ...this.snake[0] };
+                switch (this.direction) {
+                    case 'up': head.y--; break;
+                    case 'down': head.y++; break;
+                    case 'left': head.x--; break;
+                    case 'right': head.x++; break;
+                }
+                this.snake.unshift(head);
+
+                // 检查是否吃到食物
+                if (head.x === this.apple.x && head.y === this.apple.y) {
+                    this.score += 1; // 吃到苹果加1分
+                    if (this.isBoosting) {
+                        this.score += 1; // 加速状态下吃到苹果额外加1分
+                    }
+                    this.apple = this.generateFood(false);
+                    this.nowScore.textContent = this.score; // 更新分数显示
+                } else {
+                    this.snake.pop();
+                }
+
+                // 处理蓝色方块生命周期
+                if (this.blueBlock) {
+                    this.blueBlockLifespan--;
+                    if (this.blueBlockLifespan <= 0) {
+                        this.blueBlock = null;
+                    }
+                }
+
+                // 计算当前蓝色方块生成概率（加速状态下提升50%）
+                const currentBlueProbability = this.isBoosting 
+                    ? BASE_BLUE_PROBABILITY * 1.5 
+                    : BASE_BLUE_PROBABILITY;
+
+                // 每一步移动有概率生成蓝色方块（无蓝色方块时）
+                if (!this.blueBlock && Math.random() < currentBlueProbability) {
+                    this.blueBlock = this.generateFood(true);
+                    this.blueBlockLifespan = BLUE_BLOCK_LIFESPAN; // 设置生命周期
+                }
+
+                // 检查是否吃到蓝色道具
+                if (this.blueBlock && head.x === this.blueBlock.x && head.y === this.blueBlock.y) {
+                    this.score += 2;
+                    this.nowScore.textContent = this.score; // 更新分数显示
+                    this.isBoosting = true;
+                    this.boostEndTime = Date.now() + BOOST_DURATION;
+                    this.blueBlock = null;
+                }
+
+                // 加速状态检查
+                if (this.isBoosting && Date.now() > this.boostEndTime) {
+                    this.isBoosting = false;
+                }
+
+                // 碰撞检测
+                const collision = this.checkCollision();
+                if (collision) {
+                    this.gameOver();
+                    return;
+                }
+
+                // 绘制
+                this.draw();
+
+                // 设置游戏速度
+                const speed = this.isBoosting ? BOOST_SPEED : NORMAL_SPEED;
+                this.gameLoop = setTimeout(() => this.updateGame(), speed);
+            }
+
+            draw() {
+                // 清除画布
+                this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+                // 计算加速状态剩余时间比例，控制泛光强度和颜色
+                if (this.isBoosting) {
+                    const now = Date.now();
+                    const remainingBoostTime = this.boostEndTime - now;
+                    const boostRatio = Math.max(0, remainingBoostTime / BOOST_DURATION);
+                    
+                    // 随时间减少，泛光效果减弱但仍然保持夸张
+                    const glowIntensity = 0.1 + boostRatio * 0.7;
+                    
+                    // 每200ms切换一次颜色（蓝色和绿色之间）
+                    if (now - this.lastGlowUpdate > 80000) {
+                        this.lastGlowUpdate = now;
+                        this.glowColor = this.glowColor === 'rgba(0, 255, 25, 0.8)' 
+                            ? 'rgba(0, 255, 0, 0.8)' 
+                            : 'rgba(0, 255, 0, 0.8)';
+                    }
+                    
+                    document.documentElement.style.setProperty('--glow-color', this.glowColor);
+                    this.canvas.classList.add('glow');
+                } else {
+                    document.documentElement.style.setProperty('--glow-color', 'rgba(0, 0, 0, 0)');
+                    this.canvas.classList.remove('glow');
+                }
+
+
+                // 绘制蛇
+                this.ctx.fillStyle = '#0f0';
+                this.snake.forEach((segment, index) => {
+                    this.ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                });
+
+                // 绘制苹果 - 根据加速状态决定颜色
+                if (this.isBoosting) {
+                    this.ctx.fillStyle = '#800080'; // 紫色
+                } else {
+                    this.ctx.fillStyle = '#f00'; // 红色
+                }
+                this.ctx.fillRect(this.apple.x * CELL_SIZE, this.apple.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+
+                // 绘制蓝色道具 - 随生命周期减少透明度
+                if (this.blueBlock) {
+                    const opacity = this.blueBlockLifespan / BLUE_BLOCK_LIFESPAN;
+                    this.ctx.fillStyle = `rgba(0, 0, 255, ${opacity})`;
+                    this.ctx.fillRect(this.blueBlock.x * CELL_SIZE, this.blueBlock.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                }
+            }
+
+            gameOver() {
+                this.isGameRunning = false;
+                this.isBoosting = false;
+                this.boostEndTime = 0;
+                this.finalScoreSpan.textContent = this.score;
+                this.gameOverDiv.style.display = 'block';
+                clearTimeout(this.gameLoop);
+                this.canvas.classList.remove('glow');
+            }
+        }
+
+        // 初始化游戏
+        new SnakeGame();
+    </script>
+</body>
+</html>    

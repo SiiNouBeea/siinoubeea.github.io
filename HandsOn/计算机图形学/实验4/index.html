@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机图形学实验 - ③</title>
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
+    <link rel="icon" type="image/png" href="../../../img/logo.png">
+</head>
+    <body>
+        <header class="experiments-header">
+            <div class="container">
+                <h1>第四次实验作业</h1>
+                <p style="color: #66ccff; font-size: 0.9rem; white-space: nowrap;">2025-10-14</p>
+                <span>熟悉二维和三维图形变换，包括基本变换的类型，缩放、平移、旋转，能够区别刚体和非刚体变换。能够了解常见变换的齐次矩阵表示，并能应用矩阵计算相应点在空间中经过多次复合变换后的结果。能够了解用鼠标模拟跟踪球实现的机制，并能利用鼠标模拟交互控制三维空间中对象的变换操作</span>
+            </div>
+        </header>
+
+        <div class="task-list">
+            <a href="../index.html" class="back-link">← 返回实验列表</a>
+            <h2 class="section-title">实验要求：Web二维/三维图形变换应用</h2>
+
+            <div class="task-item">
+                <span>任务 A</span>
+                <div class="task-description">重复教材上的代码，完成旋转的立方体。要求如下：
+                    <p>任务a. 实现教材上的例题代码，通过三个按键选择旋转方向，绘制旋转的立方体</p>
+                    <p>任务b. 添加控制，实现旋转的立方体分别在X, Y, Z三条轴向上的平移，控制和平移参数的实现形式不限</p>
+                    <p>任务c. 添加控制，实现旋转的立方体分别沿X, Y, Z三条轴向上的缩放，控制和缩放参数的实现形式不限</p>
+                </div>
+                <a href="a.html" class="demo-button">演示</a>
+            </div>
+
+            <div class="task-item">
+                <span>任务 B</span>
+                <div class="task-description">设计画布界面和场景，完成以下功能：
+                    <p>任务a. 场景中可以添加的元素包括：立方体、正三角形、正方形、圆。用户在画布场景中点击鼠标时，在相应鼠标点击位置绘制所选择对象</p>
+                    <p>任务b. 如果为正三角形，需持续放大缩小并循环，比如缩放参数可在0.5-2之间来回往复变化，具体数值可自由设定</p>
+                    <p>任务c. 如果为正方形，需持续绕Z轴转动，大小，速度可自行设定</p>
+                    <p>任务d. 如果为立方体，需持续绕某一特定轴转动，要求是任一时刻都能看到至少两个面</p>
+                    <p>任务e. 如果为圆，需在XOY平面上作随机平移，速度和位移值可自行设定</p>
+                    <p>任务f. 正三角形、正方形、圆、立方体分别用一个按键或者菜单实现相应选择</p>
+                    <p>任务g. 绘制圆时，用滑动条控制圆的边数</p>
+                    <p>任务h. 用按键实现场景清空功能</p>
+                    <p>任务i. 绘制每个对象时，颜色通过颜色选择器实现</p>
+                    <p>提示：多个元素的动画可采用多个着色器程序多个缓存实现</p>
+                </div>
+                <a href="b.html" class="demo-button">演示</a>
+            </div>
+        </div>
+
+        <div class="signature-container">
+            <p class="neon-signature">SiNouBeea</p>
+        </div>
+    </body>
+</html>
