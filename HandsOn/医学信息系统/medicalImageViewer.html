@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医学影像浏览器</title>
+    <link rel="stylesheet" href="css/medicalImageViewer.css">
+</head>
+<body>
+    <div class="container">
+        <h1>医学影像浏览器</h1>
+
+        <!-- 控制面板 -->
+        <div class="control-panel">
+
+            <div class="control-group">
+                <span>*导入图像:</span>
+                <input type="file" id="imageInput" accept="image/*">
+                <span>导入标记[可选]:</span>
+                <input type="file" id="noteInput" accept=".note">
+            </div>
+
+
+
+            <div class="control-group">
+                <span>缩放:</span>
+                <input type="range" id="zoomSlider" min="0.1" max="3" step="0.1" value="1">
+                <button id="resetZoom">重置</button>
+            </div>
+
+            <!-- 保留标记颜色选择器 -->
+            <div class="control-group">
+                <span>标记颜色:</span>
+                <input type="color" id="markerColor" value="#ff0000">
+            </div>
+
+            <button id="exportNote">导出标记</button>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 左侧标记列表 -->
+            <div class="marker-list-sidebar" id="markerList">
+                <h3>标记列表</h3>
+                <div id="markerItems"></div>
+            </div>
+
+            <!-- 右侧图像容器 -->
+            <div class="image-area">
+                <div class="image-container" id="imageContainer">
+                    <img id="medicalImage" alt="医学影像">
+                    <canvas id="markerCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 标记编辑框 -->
+    <div id="editDrawer">
+    <h3>编辑标记</h3>
+    <div class="field">
+        <label>名称</label>
+        <input type="text" id="editName">
+    </div>
+    <div class="field">
+        <label>描述</label>
+        <textarea id="editDesc" rows="3"></textarea>
+    </div>
+    <div class="field">
+        <label>颜色</label>
+        <input type="color" id="editColor" class="color-preview">
+    </div>
+    <button id="saveMarkerEdit">保存</button>
+</div>
+
+    <script src="js/medicalImageViewer.js"></script>
+</body>
+</html>
