@@ -75,9 +75,16 @@ h1 {
     align-items: flex-start;
 }
 
-/* 左侧标记列表侧边栏 */
+/* 左侧区域改为垂直布局 */
+.left-sidebar {
+    flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 标记列表侧边栏样式 */
 .marker-list-sidebar {
-    flex: 0 0 300px; /* 固定宽度 */
     background: #fff;
     padding: 15px;
     border-radius: 6px;
@@ -369,4 +376,56 @@ h1 {
         max-width: 1000px;
         max-height: 1000px;
     }
+}
+
+/* 霓虹渐变签名样式 */
+.neon-signature {
+    background: linear-gradient(90deg,
+        #ff6b6b, #feca57, #48dbfb, #1dd1a1,
+        #f368e0, #ff9ff3, #54a0ff, #5f27cd);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: neonGradient 3s ease infinite;
+    font-weight: 700;
+    font-size: 0.9em;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes neonGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+}
+
+/* 页脚 */
+footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 40px;
+}
+
+footer p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* 返回链接样式 */
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #4da6ff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #80ccff;
+    text-shadow: 0 0 8px rgba(77, 166, 255, 0.4);
 }

@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <h1>医学影像浏览器</h1>
+        <a href="../../index.html" class="back-link">← 返回主页</a>
 
         <!-- 控制面板 -->
         <div class="control-panel">
@@ -39,10 +40,20 @@
 
         <!-- 主要内容区域 -->
         <div class="main-content">
-            <!-- 左侧标记列表 -->
-            <div class="marker-list-sidebar" id="markerList">
-                <h3>标记列表</h3>
-                <div id="markerItems"></div>
+            <!-- 左侧区域 -->
+            <div class="left-sidebar">
+                <div class="marker-list-sidebar">
+                    <h3>使用说明</h3>
+                    <p>1. 导入医学影像和标记文件。</p>
+                    <p>2. 缩放图像以适应窗口。</p>
+                    <p>3. 左键按住鼠标，拖动图像。</p>
+                    <p>4. 右键图像位置添加标记。</p>
+                    <p>5. 点击标记修改标注。</p>
+                </div>
+                <div class="marker-list-sidebar" id="markerList">
+                    <h3>标记列表</h3>
+                    <div id="markerItems"></div>
+                </div>
             </div>
 
             <!-- 右侧图像容器 -->
@@ -58,21 +69,27 @@
 
     <!-- 标记编辑框 -->
     <div id="editDrawer">
-    <h3>编辑标记</h3>
-    <div class="field">
-        <label>名称</label>
-        <input type="text" id="editName">
+        <h3>编辑标记</h3>
+        <div class="field">
+            <label>名称</label>
+            <input type="text" id="editName">
+        </div>
+        <div class="field">
+            <label>描述</label>
+            <textarea id="editDesc" rows="3"></textarea>
+        </div>
+        <div class="field">
+            <label>颜色</label>
+            <input type="color" id="editColor" class="color-preview">
+        </div>
+        <button id="saveMarkerEdit">保存</button>
     </div>
-    <div class="field">
-        <label>描述</label>
-        <textarea id="editDesc" rows="3"></textarea>
-    </div>
-    <div class="field">
-        <label>颜色</label>
-        <input type="color" id="editColor" class="color-preview">
-    </div>
-    <button id="saveMarkerEdit">保存</button>
-</div>
+
+    <footer>
+        <div class="container">
+            <span class="neon-signature">SiiNouBeea</span>
+        </div>
+    </footer>
 
     <script src="js/medicalImageViewer.js"></script>
 </body>
