@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../img/logo.png">
+    <title>Markdown文件查看器</title>
+    <link rel="stylesheet" href="../../css/style_mdv.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部工具栏 -->
+        <div class="toolbar">
+            <h1>Markdown文件查看器</h1>
+            <div class="controls">
+                <input type="file" id="fileInput" accept=".md,.txt" multiple>
+                <label for="fileInput" class="file-input-label">选择文件</label>
+                <button id="toggleView" class="toggle-btn">切换双列视图</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 左侧导航栏 -->
+            <div class="sidebar">
+                <h2>文件列表</h2>
+                <ul id="fileList" class="file-list">
+                    <!-- 文件列表将在这里动态生成 -->
+                </ul>
+            </div>
+
+            <!-- 主内容区域 -->
+            <div class="content-area">
+                <div id="singleColumn" class="single-column">
+                    <!-- 单列模式下显示的内容 -->
+                </div>
+                <div id="doubleColumn" class="double-column hidden">
+                    <!-- 双列模式下显示的内容 -->
+                    <div class="column" id="leftColumn"></div>
+                    <div class="column" id="rightColumn"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VSX图片预览浮窗 -->
+    <div id="vsdxModal" class="vsdx-modal hidden">
+        <div class="modal-header">
+            <span>VSX图片预览</span>
+            <button id="closeModal" class="close-btn">×</button>
+        </div>
+        <div class="modal-content">
+            <div id="vsdxContent"></div>
+        </div>
+    </div>
+
+    <!-- 引入marked库解析Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/mdv.js" type="module"></script>
+</body>
+</html>
