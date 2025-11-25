@@ -95,64 +95,7 @@ class FamilyScene {
 
     // 加载初始模型
     async loadInitialModel() {
-        try {
-            this.showLoadingOverlay('加载Family模型...');
 
-            // 尝试加载Family模型
-            await this.modelLoader.loadModel('models/family.obj', 'Family');
-
-            // 更新模型状态
-            this.uiManager.updateModelInfo();
-            this.uiManager.updateModelStatus('Family模型加载成功');
-
-        } catch (error) {
-            console.warn('Family模型加载失败:', error);
-
-            // 创建备用几何体
-            this.createFallbackGeometry();
-            this.uiManager.updateModelStatus('Family模型加载失败，使用备用几何体');
-        }
-    }
-
-    // 创建备用几何体
-    createFallbackGeometry() {
-        // 创建简单的字母几何体表示Family
-        const letters = ['F', 'A', 'M', 'I', 'L', 'Y'];
-        const colors = [
-            0x2E5A88, // 爸爸 - 深蓝
-            0xC44D58, // 妈妈 - 暖红
-            0x30A14F, // 孩子 - 绿色
-            0xFFD93D, // 孩子 - 黄色
-            0x8B4513, // 祖辈 - 棕色
-            0xFFFFFF  // 宠物 - 白色
-        ];
-
-        letters.forEach((letter, index) => {
-            const geometry = new THREE.BoxGeometry(0.8, 1.5, 0.3);
-            const material = new THREE.MeshPhongMaterial({
-                color: colors[index],
-                shininess: 30
-            });
-
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set((index - 2.5) * 1.2, 0, 0);
-            mesh.name = `Letter_${letter}`;
-            mesh.userData.type = 'letter';
-            mesh.userData.letter = letter;
-
-            this.sceneManager.scene.add(mesh);
-
-            // 为F字母添加顶部横杠
-            if (letter === 'F') {
-                const topBarGeometry = new THREE.BoxGeometry(2.5, 0.3, 0.3);
-                const topBar = new THREE.Mesh(topBarGeometry, material);
-                topBar.position.set(mesh.position.x, mesh.position.y + 1.1, mesh.position.z);
-                topBar.name = 'F_TopBar';
-                topBar.userData.type = 'topBar';
-
-                this.sceneManager.scene.add(topBar);
-            }
-        });
     }
 
     // 渲染循环
