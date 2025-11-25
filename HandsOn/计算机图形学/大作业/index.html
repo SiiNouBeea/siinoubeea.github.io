@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family - 三维情感场景 (Three.js)</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #webgl-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="webgl-canvas"></canvas>
+
+        <div id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <p>正在初始化场景...</p>
+        </div>
+
+        <div id="ui-container">
+            <div id="title">
+                <h1>Family</h1>
+                <p>Father and Mother I Love You</p>
+            </div>
+
+            <div class="control-panel">
+                <h3>光源控制</h3>
+
+                <div class="control-group">
+                    <label for="light-intensity">光源强度:</label>
+                    <input type="range" id="light-intensity" min="0" max="2" step="0.1" value="1.0">
+                </div>
+
+                <div class="control-group">
+                    <label for="light-color">光源颜色:</label>
+                    <input type="color" id="light-color" value="#FFFFFF">
+                </div>
+
+                <div class="control-group">
+                    <label for="ambient-light">环境光:</label>
+                    <input type="range" id="ambient-light" min="0" max="1" step="0.1" value="0.3">
+                </div>
+
+                <div class="control-group">
+                    <label for="lighting-algorithm">光照算法:</label>
+                    <select id="lighting-algorithm">
+                        <option value="standard">标准光照</option>
+                        <option value="phong">Phong光照</option>
+                        <option value="lambert">Lambert光照</option>
+                        <option value="toon">卡通光照</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button id="add-light">添加光源</button>
+                    <button id="remove-light">移除光源</button>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <h3>相机控制</h3>
+                <div class="button-group">
+                    <button id="reset-camera">重置相机</button>
+                    <button id="first-person-toggle">第一人称模式</button>
+                </div>
+                <div class="control-group">
+                    <label for="camera-distance">相机距离:</label>
+                    <input type="range" id="camera-distance" min="5" max="20" step="0.5" value="10">
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <h3>模型控制</h3>
+                <div class="button-group">
+                    <button id="load-model">加载模型</button>
+                    <button id="clear-models">清除模型</button>
+                </div>
+                <div class="control-group">
+                    <label for="model-scale">模型缩放:</label>
+                    <input type="range" id="model-scale" min="0.1" max="5" step="0.1" value="1.0">
+                </div>
+                <div id="model-info">
+                    <p>已加载模型: 0</p>
+                    <p>当前选中: 无</p>
+                </div>
+            </div>
+
+            <div id="info-panel">
+                <p id="model-status">模型状态: 初始化中...</p>
+                <p id="camera-info">相机位置: (0, 0, 10)</p>
+                <p id="light-info">光源数量: 1</p>
+                <p id="fps-counter">FPS: 0</p>
+                <p id="interaction-info">交互: 左键拖动旋转 | 中键拖动平移 | 滚轮缩放 | 右键选择模型</p>
+            </div>
+        </div>
+
+        <!-- 隐藏的文件输入 -->
+        <input type="file" id="file-input" accept=".obj,.fbx,.gltf,.glb" style="display: none;" multiple>
+    </div>
+
+    <!-- Three.js 库 - 本地版本 -->
+    <script src="js/three/three.min.js"></script>
+    <!-- OBJ加载器 - 本地版本 -->
+    <script src="js/three/OBJLoader.js"></script>
+    <!-- OrbitControls 轨道控制器 - 本地版本 -->
+    <script src="js/three/OrbitControls.js"></script>
+
+    <!-- 项目脚本 -->
+    <script src="js/scene-manager.js"></script>
+    <script src="js/model-loader.js"></script>
+    <script src="js/interaction-manager.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    color: #fff;
+    overflow: hidden;
+}
+
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#webgl-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#webgl-canvas:active {
+    cursor: grabbing;
+}
+
+#loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#ui-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 300px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 15px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+#title {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 10px;
+}
+
+#title h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#title p {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.control-panel {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-panel h3 {
+    margin-bottom: 10px;
+    color: #4fc3f7;
+    font-size: 16px;
+}
+
+.control-group {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.control-group label {
+    flex: 1;
+    font-size: 14px;
+}
+
+.control-group input[type="range"] {
+    flex: 2;
+    margin: 0 10px;
+}
+
+.control-group input[type="color"] {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.button-group button {
+    padding: 8px 5px;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 12px;
+}
+
+.button-group button:hover {
+    background: #1976d2;
+    transform: translateY(-2px);
+}
+
+.button-group button:active {
+    transform: translateY(0);
+}
+
+/* 模型控制面板样式 */
+#model-info {
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+#model-info p {
+    margin: 2px 0;
+}
+
+#info-panel {
+    font-size: 12px;
+    color: #aaa;
+}
+
+#info-panel p {
+    margin-bottom: 5px;
+}
+
+#interaction-info {
+    font-size: 11px;
+    color: #888;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 5px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #ui-container {
+        width: 250px;
+        padding: 10px;
+    }
+
+    #title h1 {
+        font-size: 22px;
+    }
+
+    .button-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 第一人称模式菜单样式 */
+.first-person-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 10000;
+    font-family: Arial, sans-serif;
+    border: 2px solid #2196f3;
+    backdrop-filter: blur(5px);
+}
+
+.first-person-menu h3 {
+    margin-bottom: 15px;
+    color: #4fc3f7;
+}
+
+.first-person-menu input[type="range"] {
+    width: 150px;
+    margin: 0 10px;
+}
+
+.first-person-menu button {
+    background: #2196f3;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.first-person-menu button:hover {
+    background: #1976d2;
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DICOM医学影像浏览器</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- 引入必要的库 -->
+    <script src="/lib/dicomParser.min.js"></script>
+    <script src="/lib/hammer.min.js"></script>
+    <script src="/lib/cornerstone.min.js"></script>
+    <script src="/lib/cornerstoneMath.min.js"></script>
+    <script src="/lib/cornerstoneTools.min.js"></script>
+    <script src="/lib/cornerstoneWebImageLoader.min.js"></script>
+    <script src="lib/cornerstoneWADOImageLoader.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🩺</div>
+            <h1>DICOM医学影像浏览器</h1>
+        </div>
+        <div class="header-controls">
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="exportReportBtn">
+                    <span class="btn-icon">📄</span> 导出报告
+                </button>
+                <button class="btn" id="saveImageBtn">
+                    <span class="btn-icon">💾</span> 保存图像
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="panel">
+                <h3>文件管理</h3>
+                <div class="file-upload" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <p>点击或拖拽DICOM文件到此处</p>
+                    <p class="file-upload-hint">支持单文件或文件夹上传</p>
+                    <input type="file" id="fileInput" accept=".dcm,.dicom" multiple style="display: none;">
+                </div>
+                <div class="file-info">
+                    <div class="info-item">
+                        <span class="info-label">当前序列:</span>
+                        <span id="currentSeries">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">切片:</span>
+                        <span id="sliceInfo">0/0</span>
+                    </div>
+                </div>
+                <div class="dimensions">
+                    <div class="dimension">
+                        <div class="dimension-label">宽度</div>
+                        <div class="dimension-value" id="imageWidth">-</div>
+                    </div>
+                    <div class="dimension">
+                        <div class="dimension-label">高度</div>
+                        <div class="dimension-value" id="imageHeight">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="tab-container">
+                    <div class="tab active" data-tab="view">视图</div>
+                    <div class="tab" data-tab="measure">测量</div>
+                    <div class="tab" data-tab="annotate">标记</div>
+                    <div class="tab" data-tab="3d">3D再现</div>
+                </div>
+
+                <div class="tab-content active" id="view-tab">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>窗宽</span>
+                            <span id="windowWidthValue">-</span>
+                        </div>
+                        <input type="range" min="1" max="2000" value="400" class="slider" id="windowWidthSlider">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>窗位</span>
+                            <span id="windowLevelValue">-</span>
+                        </div>
+                        <input type="range" min="-100" max="1000" value="40" class="slider" id="windowLevelSlider">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>缩放</span>
+                            <span id="zoomValue">100%</span>
+                        </div>
+                        <input type="range" min="10" max="500" value="100" class="slider" id="zoomSlider">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>切片</span>
+                            <span id="sliceValue">0/0</span>
+                        </div>
+                        <input type="range" min="0" max="0" value="0" class="slider" id="sliceSlider">
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" id="resetViewBtn">重置视图</button>
+                        <button class="btn" id="invertBtn">反色</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="measure-tab">
+                    <div class="tool-group" style="margin-bottom: 15px;">
+                        <button class="tool-btn active" data-tool="Length">长度</button>
+                        <button class="tool-btn" data-tool="Angle">角度</button>
+                        <button class="tool-btn" data-tool="EllipticalRoi">面积</button>
+                        <button class="tool-btn" data-tool="Probe">像素值</button>
+                    </div>
+
+                    <div class="measurement-list" id="measurementList">
+                        <div class="empty-message">暂无测量数据</div>
+                    </div>
+
+                    <button class="btn btn-secondary" id="clearMeasurementsBtn">清除所有测量</button>
+                </div>
+
+                <div class="tab-content" id="annotate-tab">
+                    <div class="tool-group" style="margin-bottom: 15px;">
+                        <button class="tool-btn active" data-tool="ArrowAnnotate">箭头</button>
+                        <button class="tool-btn" data-tool="FreehandRoi">自由绘制</button>
+                        <button class="tool-btn" data-tool="Eraser">擦除</button>
+                    </div>
+
+                    <div class="color-picker">
+                        <span>标记颜色:</span>
+                        <input type="color" id="annotationColor" value="#ff0000">
+                    </div>
+
+                    <div class="annotation-list" id="annotationList">
+                        <div class="empty-message">暂无标记</div>
+                    </div>
+
+                    <button class="btn btn-secondary" id="clearAnnotationsBtn">清除所有标记</button>
+                </div>
+
+                <div class="tab-content" id="3d-tab">
+                    <p style="margin-bottom: 15px;">3D体绘制再现</p>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>透明度</span>
+                            <span id="opacityValue">70%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>亮度</span>
+                            <span id="brightnessValue">50%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="brightnessSlider">
+                    </div>
+
+                    <div class="view-options">
+                        <label>
+                            <input type="radio" name="viewType" value="mpr" checked> MPR视图
+                        </label>
+                        <label>
+                            <input type="radio" name="viewType" value="volume"> 体绘制
+                        </label>
+                    </div>
+
+                    <button class="btn" id="render3dBtn">生成3D视图</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>图像信息</h3>
+                <div class="info-grid" id="imageInfo">
+                    <div class="empty-message">无图像信息</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="viewer-container">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <button class="tool-btn active" data-tool="Pan">平移</button>
+                    <button class="tool-btn" data-tool="Zoom">缩放</button>
+                    <button class="tool-btn" data-tool="Wwwc">窗宽/窗位</button>
+                    <button class="tool-btn" data-tool="Length">测量</button>
+                    <button class="tool-btn" data-tool="ArrowAnnotate">标记</button>
+                    <button class="tool-btn" id="rotateBtn">旋转</button>
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn" id="prevSliceBtn">◀ 上一张</button>
+                    <span id="sliceCounter">切片 0/0</span>
+                    <button class="tool-btn" id="nextSliceBtn">下一张 ▶</button>
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn" id="playSequenceBtn">播放序列</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div id="dicomImage" class="cornerstone-element"
+                     oncontextmenu="return false;"
+                     onselectstart="return false;"
+                     ondragstart="return false;">
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div id="positionInfo">位置: (0, 0) | 像素值: -</div>
+                <div id="imageSize">图像大小: - × -</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="js/dicomLoader.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
