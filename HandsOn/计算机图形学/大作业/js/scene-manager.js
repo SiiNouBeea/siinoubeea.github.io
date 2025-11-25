@@ -32,7 +32,7 @@ class SceneManager {
         this.previousMouseX = 0;
         this.previousMouseY = 0;
         this.isMouseDown = false;
-        this.currentLightingAlgorithm = 'standard';
+        // 移除 this.currentLightingAlgorithm = 'standard';
     }
 
     // 初始化场景
@@ -49,7 +49,7 @@ class SceneManager {
             0.1,
             1000
         );
-        this.camera.position.set(0, 5, 15);
+        this.camera.position.set(0, -0.6, 10);
         this.camera.lookAt(0, 0, 0);
 
         // 创建渲染器
@@ -85,6 +85,21 @@ class SceneManager {
         this.setupGround();
         // 设置天空盒
         this.setupSkybox();
+
+        // 加载并生成树木
+        try {
+            const treeModel = await this.loadTreeModel();
+            await this.generateTrees(treeModel);
+        } catch (error) {
+            console.warn('树木模型加载失败，跳过树木生成:', error);
+        }
+
+        try {
+             const FamilyModel = await this.loadFamilyModel();
+             await this.generateFamily(FamilyModel);
+        } catch (error) {
+            console.warn('初始模型加载失败', error);
+        }
 
         // 处理窗口大小变化
         window.addEventListener('resize', () => this.onWindowResize());
@@ -175,23 +190,150 @@ class SceneManager {
         );
     }
 
+    // 加载树木模型
+    async loadTreeModel() {
+        const loader = new THREE.OBJLoader();
+        return new Promise((resolve, reject) => {
+            // 修正路径为正确的相对路径
+            loader.load('./models/tree.obj',
+                (object) => {
+                    console.log('树木模型加载成功');
+                    resolve(object);
+                },
+                undefined,
+                (error) => {
+                    console.error('树木模型加载失败:', error);
+                    reject(error);
+                }
+            );
+        });
+    }
+
+    // 加载初始模型
+       async loadFamilyModel() {
+           const loader = new THREE.OBJLoader();
+           return new Promise((resolve, reject) => {
+               loader.load('./models/family.obj',
+                   (object) => {
+                       console.log('Family模型加载成功');
+                       resolve(object);
+                   },
+                   undefined,
+                   (error) => {
+                       console.error('Family模型加载失败:', error);
+                       reject(error);
+                   }
+               );
+           });
+       }
+
+    // 加载初始场景
+    async generateFamily(FamilyModel) {
+        if (!FamilyModel) return;
+
+            // 克隆原始树模型
+            const Family = FamilyModel.clone();
+
+            Family.position.x = 0;
+            Family.position.z = 0;
+            Family.position.y = -2; // 与地面齐平
+
+            const scale = 8;
+            Family.scale.set(scale, scale, scale);
+
+            // 设置随机朝向
+            Family.rotation.y = Math.PI * -0.5;
+
+            // 启用阴影
+            Family.traverse(child => {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            // 给树木添加标识以便区分
+            Family.name = `Family`;
+            if (!Family.userData) Family.userData = {};
+            Family.userData.type = 'Family';
+
+            // 添加到场景和模型列表
+            this.scene.add(Family);
+            this.models.push(Family);
+
+        console.log('已加载Family');
+    }
+
+    // 生成树木
+    async generateTrees(treeModel) {
+        if (!treeModel) return;
+
+        for (let i = 0; i < 1500; i++) {
+            // 克隆原始树模型
+            const tree = treeModel.clone();
+
+            // 设置随机位置（距离中心7-67米）
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 7 + Math.random() * 60;
+
+            tree.position.x = Math.cos(angle) * distance;
+            tree.position.z = Math.sin(angle) * distance;
+            tree.position.y = -2; // 与地面齐平
+
+            // 设置随机大小（1倍到72倍之间）
+            const scale = 0.2*(distance-7) + Math.random()*2;
+
+            tree.scale.set(scale, scale, scale);
+
+            // 设置随机朝向
+            tree.rotation.y = Math.random() * Math.PI * 2;
+
+            // 启用阴影
+            tree.traverse(child => {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            // 给树木添加标识以便区分
+            tree.name = `Tree_${i}`;
+            if (!tree.userData) tree.userData = {};
+            tree.userData.type = 'tree';
+
+            // 添加到场景和模型列表
+            this.scene.add(tree);
+            this.models.push(tree);
+        }
+
+        console.log('已生成1500棵树');
+    }
+
     // 添加模型到场景
-    addModel(model, name = 'CustomModel') {
+    addModel(model, name = 'CustomModel', position = null, useRandomPosition = true, type_1='customModel') {
         if (!model) return null;
 
         // 确保模型有名称和用户数据
         model.name = name;
         if (!model.userData) model.userData = {};
-        model.userData.type = 'customModel';
+        model.userData.type = type_1;
         model.userData.originalName = name;
 
-        // 设置随机位置
-        const groundLevel = -2; // 与地面网格相同的高度
-        model.position.set(
-            (Math.random() - 0.5) * 10,
-            groundLevel, // 放在地面上
-            (Math.random() - 0.5) * 10
-        );
+        if (position) {
+            // 使用指定位置
+            model.position.copy(position);
+        } else if (useRandomPosition) {
+            // 设置随机位置
+            const groundLevel = -2; // 与地面网格相同的高度
+            model.position.set(
+                0,
+                0.2, // 放在地面上
+                0
+            );
+        } else {
+            // 默认放在世界中心
+            model.position.set(0, 1, 0);
+        }
 
         model.rotation.y = -Math.PI / 2;
 
@@ -207,28 +349,7 @@ class SceneManager {
         this.scene.add(model);
         this.models.push(model);
 
-        // 应用当前光照算法
-        if (this.currentLightingAlgorithm) {
-            this.updateModelMaterial(model, this.currentLightingAlgorithm);
-        } else {
-            model.traverse(child => {
-                if (child instanceof THREE.Mesh) {
-                    // 如果模型没有材质，则创建默认材质
-                    if (!child.material) {
-                        const hue = Math.random();
-                        const color = new THREE.Color().setHSL(hue, 0.7, 0.6);
-                        child.material = new THREE.MeshPhongMaterial({
-                            color: color,
-                            shininess: 30,
-                            specular: 0x222222
-                        });
-                    }
-                    // 如果已有材质，则保留原样
-                }
-            });
-        }
-
-        console.log(`添加模型: ${name}`);
+        console.log(`添加模型: ${name} 位置: (${model.position.x.toFixed(2)}, ${model.position.y.toFixed(2)}, ${model.position.z.toFixed(2)})`);
         return model;
     }
 
@@ -257,7 +378,7 @@ class SceneManager {
     clearCustomModels() {
         // 只移除自定义模型，保留原始模型
         this.models.forEach(model => {
-            if (model.userData.type === 'customModel') {
+            if (model.userData.name === 'customModel') {
                 this.scene.remove(model);
             }
         });
@@ -388,16 +509,22 @@ class SceneManager {
         const self = this; // 保存this引用
         model.traverse(child => {
             if (child instanceof THREE.Mesh) {
-                // 获取原始材质属性
+                // 获取原始材质属性，包括颜色
                 let originalColor = new THREE.Color(0xffffff);
                 let originalEmissive = new THREE.Color(0x000000);
                 let originalShininess = 30;
+                let originalRoughness = 0.5;
+                let originalMetalness = 0.2;
+                let originalSpecular = new THREE.Color(0x111111);
 
                 // 安全地获取原始材质属性
                 if (child.material) {
                     if (child.material.color) originalColor = child.material.color.clone();
                     if (child.material.emissive) originalEmissive = child.material.emissive.clone();
                     if (child.material.shininess !== undefined) originalShininess = child.material.shininess;
+                    if (child.material.roughness !== undefined) originalRoughness = child.material.roughness;
+                    if (child.material.metalness !== undefined) originalMetalness = child.material.metalness;
+                    if (child.material.specular) originalSpecular = child.material.specular.clone();
                 }
 
                 try {
@@ -407,7 +534,7 @@ class SceneManager {
                                 color: originalColor,
                                 emissive: originalEmissive,
                                 shininess: originalShininess,
-                                specular: new THREE.Color(0x111111)
+                                specular: originalSpecular
                             });
                             break;
 
@@ -430,8 +557,8 @@ class SceneManager {
                             child.material = new THREE.MeshStandardMaterial({
                                 color: originalColor,
                                 emissive: originalEmissive,
-                                roughness: 0.5,
-                                metalness: 0.2
+                                roughness: originalRoughness,
+                                metalness: originalMetalness
                             });
                             break;
 
@@ -441,7 +568,7 @@ class SceneManager {
                                 color: originalColor,
                                 emissive: originalEmissive,
                                 shininess: originalShininess,
-                                specular: new THREE.Color(0x111111)
+                                specular: originalSpecular
                             });
                     }
 
