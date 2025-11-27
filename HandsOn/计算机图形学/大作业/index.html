@@ -1,121 +1,287 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family - 三维情感场景 (Three.js)</title>
+    <title>WebGL三维场景编辑器</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        #container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        #webgl-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
 </head>
 <body>
     <div id="container">
-        <canvas id="webgl-canvas"></canvas>
+        <div id="canvas-container">
+            <canvas id="webgl-canvas"></canvas>
+            
+            <div id="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>正在初始化三维场景...</p>
+            </div>
 
-        <div id="loading-overlay">
-            <div class="loading-spinner"></div>
-            <p>正在初始化场景...</p>
+            <div id="model-selector">
+                <h4 style="margin-bottom: 10px; color: #4ecdc4;">选择模型</h4>
+                <div id="model-list"></div>
+            </div>
+
+            <div id="status-bar">
+                <span id="fps-counter">FPS: 0</span> | 
+                <span id="model-count">模型: 0</span> | 
+                <span id="light-count">光源: 0</span> |
+                <span id="camera-mode">模式: 轨道控制</span>
+            </div>
+            
+            <!-- 按键提示 -->
+            <div id="key-hint" style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.8);
+                color: white; padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.6;
+                backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                <strong>操作提示:</strong><br>
+                L - 锁定/解锁选择<br>
+                ESC - 取消选择<br>
+                Delete - 删除模型<br>
+                Ctrl+D - 复制模型<br>
+                F3 - 切换网格视图
+            </div>
+            
+            <!-- 选中模型信息 -->
+            <div id="model-info-panel" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8);
+                color: white; padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.6;
+                backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: none;">
+                <strong>选中模型:</strong><br>
+                <span id="selected-model-name">无</span><br>
+                位置: (<span id="selected-model-x">0</span>, 
+                      <span id="selected-model-y">0</span>, 
+                      <span id="selected-model-z">0</span>)
+            </div>
         </div>
 
-        <div id="ui-container">
-            <div id="title">
-                <h1>Family</h1>
-                <p>Father and Mother I Love You</p>
+        <div id="ui-panel">
+            <div class="panel-header">
+                <h1>三维场景编辑器</h1>
+                <p></p>
             </div>
 
-            <div class="control-panel">
+            <div class="control-section">
+                <h3>场景管理</h3>
+                <div class="button-group">
+                    <button class="btn" id="new-scene">新建场景</button>
+                    <button class="btn" id="save-scene">保存场景</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="generate-initial-scene">生成初始场景</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="load-scene">加载场景</button>
+                    <button class="btn danger" id="clear-scene">清空场景</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="export-image">导出图像</button>
+                    <button class="btn" id="screenshot">截图</button>
+                </div>
+            </div>
+
+            <div class="control-section">
                 <h3>光源控制</h3>
-
                 <div class="control-group">
-                    <label for="light-intensity">光源强度:</label>
-                    <input type="range" id="light-intensity" min="0" max="2" step="0.1" value="1.0">
+                    <label for="ambient-intensity">环境光强度</label>
+                    <input type="range" id="ambient-intensity" min="0" max="1" step="0.1" value="0.3">
                 </div>
-
-                <div class="control-group">
-                    <label for="light-color">光源颜色:</label>
-                    <input type="color" id="light-color" value="#FFFFFF">
-                </div>
-
-                <div class="control-group">
-                    <label for="ambient-light">环境光:</label>
-                    <input type="range" id="ambient-light" min="0" max="1" step="0.1" value="0.3">
-                </div>
-
-
                 <div class="button-group">
-                    <button id="add-light">添加光源</button>
-                    <button id="remove-light">移除光源</button>
+                    <button class="btn" id="add-point-light">添加点光源</button>
+                    <button class="btn" id="remove-point-light">移除点光源</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="add-directional-light">添加方向光</button>
+                    <button class="btn" id="remove-directional-light">移除方向光</button>
                 </div>
             </div>
 
-            <div class="control-panel">
+            <div class="control-section">
                 <h3>相机控制</h3>
-                <div class="button-group">
-                    <button id="reset-camera">重置相机</button>
-                    <button id="first-person-toggle">第一人称模式</button>
+                <div class="control-group">
+                    <label for="camera-mode-select">相机模式</label>
+                    <select id="camera-mode-select">
+                        <option value="orbit">轨道控制</option>
+                        <option value="drone">WASD位移</option>
+                    </select>
                 </div>
                 <div class="control-group">
-                    <label for="camera-distance">相机距离:</label>
-                    <input type="range" id="camera-distance" min="5" max="20" step="0.5" value="10">
+                    <label for="camera-speed">移动速度</label>
+                    <input type="range" id="camera-speed" min="0.1" max="2" step="0.1" value="1.0">
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="reset-camera">重置相机</button>
+                    <button class="btn" id="center-view">居中视图</button>
                 </div>
             </div>
 
-            <div class="control-panel">
-                <h3>模型控制</h3>
+            <div class="control-section">
+                <h3>模型管理</h3>
                 <div class="button-group">
-                    <button id="load-model">加载模型</button>
-                    <button id="clear-models">清除模型</button>
+                    <button class="btn" id="load-model">加载模型</button>
+                    <button class="btn" id="add-primitive">添加几何体</button>
                 </div>
                 <div class="control-group">
-                    <label for="model-scale">模型缩放:</label>
+                    <label for="model-scale">模型缩放</label>
                     <input type="range" id="model-scale" min="0.1" max="5" step="0.1" value="1.0">
                 </div>
-                <div id="model-info">
-                    <p>已加载模型: 0</p>
-                    <p>当前选中: 无</p>
+                <div class="control-group">
+                    <label for="model-rotation">模型旋转</label>
+                    <input type="range" id="model-rotation" min="0" max="360" step="1" value="0">
+                </div>
+                <div class="button-group">
+                    <button class="btn warning" id="delete-selected">删除选中</button>
+                    <button class="btn" id="duplicate-selected">复制选中</button>
                 </div>
             </div>
 
-            <div id="info-panel">
-                <p id="model-status">模型状态: 初始化中...</p>
-                <p id="camera-info">相机位置: (0, 0, 10)</p>
-                <p id="light-info">光源数量: 1</p>
-                <p id="fps-counter">FPS: 0</p>
-                <p id="interaction-info">交互: 左键拖动旋转 | 中键拖动平移 | 滚轮缩放 | 右键选择模型</p>
+            <div class="control-section">
+                <h3>材质与纹理</h3>
+                <div class="control-group">
+                    <label for="material-type">材质类型</label>
+                    <select id="material-type">
+                        <option value="basic">基础材质</option>
+                        <option value="phong">Phong材质</option>
+                        <option value="lambert">Lambert材质</option>
+                        <option value="standard">标准材质</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="material-color">材质颜色</label>
+                    <input type="color" id="material-color" value="#ffffff">
+                </div>
+                <div class="control-group">
+                    <label for="material-shininess">光泽度</label>
+                    <input type="range" id="material-shininess" min="0" max="100" step="1" value="30">
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="load-texture">加载纹理</button>
+                    <button class="btn" id="load-normal-map">加载法线贴图</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>场景信息</h3>
+                <div class="info-display">
+                    <p>已加载模型: <span class="highlight" id="loaded-models">0</span></p>
+                    <p>当前选中: <span class="highlight" id="selected-model">无</span></p>
+                    <p>点光源数量: <span class="highlight" id="point-lights">0</span></p>
+                    <p>方向光数量: <span class="highlight" id="directional-lights">1</span></p>
+                    <p>相机位置: <span class="highlight" id="camera-position">(0, 0, 10)</span></p>
+                </div>
             </div>
         </div>
-
-        <!-- 隐藏的文件输入 -->
-        <input type="file" id="file-input" accept=".obj,.fbx,.gltf,.glb" style="display: none;" multiple>
     </div>
 
-    <!-- Three.js 库 - 本地版本 -->
-    <script src="js/three/three.min.js"></script>
-    <!-- OBJ加载器 - 本地版本 -->
-    <script src="js/three/OBJLoader.js"></script>
-    <!-- OrbitControls 轨道控制器 - 本地版本 -->
-    <script src="js/three/OrbitControls.js"></script>
+    <!-- 光源参数对话框 -->
+    <div id="light-params-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="light-modal-title">添加光源</h3>
+            <div classclass="form-group">
+                <label for="light-intensity">光照强度</label>
+                <input type="range" id="light-intensity" min="0" max="3" step="0.1" value="3.0">
+                <span id="intensity-value">3.0</span>
+            </div>
+            <div class="form-group">
+            <label for="light-color">光源颜色</label>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 2px;">
+                    <input type="color" id="light-color" value="#ffffff" style="display: none;">
+                    <div id="color-preview" style="
+                        width: 100%;
+                        height: 24px;
+                        background-color: #ffffff;
+                        border: 2px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 4px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                        transition: all 0.2s ease;
+                        cursor: pointer;
+                    "></div>
+                </div>
+            </div>
+            <div class="form-group" id="light-distance-group">
+                <label for="light-distance">光照范围(0表示无限制)</label>
+                <input type="range" id="light-distance" min="0" max="200" step="1" value="200">
+                <span id="distance-value">200</span>
+            </div>
+            <div class="form-group">
+                <label for="light-position-x">位置 X</label>
+                <input type="number" id="light-position-x" value="0" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="light-position-y">位置 Y</label>
+                <input type="number" id="light-position-y" value="5" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="light-position-z">位置 Z</label>
+                <input type="number" id="light-position-z" value="0" step="0.5">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="confirm-light">确认添加</button>
+                <button class="btn danger" id="cancel-light">取消</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- 项目脚本 -->
-    <script src="js/scene-manager.js"></script>
+    <!-- 模型加载参数对话框 -->
+    <div id="model-params-modal" class="modal">
+        <div class="modal-content">
+            <h3>模型加载参数</h3>
+            <div class="form-group">
+                <label for="model-position-x">位置 X</label>
+                <input type="number" id="model-position-x" value="0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-position-y">位置 Y</label>
+                <input type="number" id="model-position-y" value="0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-position-z">位置 Z</label>
+                <input type="number" id="model-position-z" value="0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-scale-x">缩放 X</label>
+                <input type="number" id="model-scale-x" value="1" step="0.1" min="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-scale-y">缩放 Y</label>
+                <input type="number" id="model-scale-y" value="1" step="0.1" min="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-scale-z">缩放 Z</label>
+                <input type="number" id="model-scale-z" value="1" step="0.1" min="0.1">
+            </div>
+            <div class="form-group">
+                <label for="model-rotation-x">旋转 X (度)</label>
+                <input type="number" id="model-rotation-x" value="0" step="1">
+            </div>
+            <div class="form-group">
+                <label for="model-rotation-y">旋转 Y (度)</label>
+                <input type="number" id="model-rotation-y" value="0" step="1">
+            </div>
+            <div class="form-group">
+                <label for="model-rotation-z">旋转 Z (度)</label>
+                <input type="number" id="model-rotation-z" value="0" step="1">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="confirm-load">确认加载</button>
+                <button class="btn danger" id="cancel-load">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 库  -->
+    <script src="common/three.min.js"></script>
+    <script src="common/OBJLoader.js"></script>
+    <script src="common/OrbitControls.js"></script>
+    <script src="common/MTLLoader.js"></script>
+    <!-- JS  -->
     <script src="js/model-loader.js"></script>
     <script src="js/interaction-manager.js"></script>
     <script src="js/ui-manager.js"></script>
+    <script src="js/light-manager.js"></script>
+    <script src="js/file-manager.js"></script>
+    <script src="js/camera-manager.js"></script>
+    <script src="js/model-manager.js"></script>
+    <script src="js/scene-generator.js"></script>
+    <script src="js/environment-manager.js"></script>
+    <script src="js/grid-helper.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
