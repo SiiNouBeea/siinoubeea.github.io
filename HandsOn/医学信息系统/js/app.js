@@ -109,6 +109,8 @@ class DICOMViewer {
     setupEventListeners() {
         console.log('设置事件监听器...');
 
+
+
         // 文件上传
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
@@ -248,6 +250,8 @@ class DICOMViewer {
             'opacitySlider': (e) => this.adjustOpacity(e.target.value),
             'brightnessSlider': (e) => this.adjustBrightness(e.target.value)
         };
+
+
 
         Object.keys(sliderMap).forEach(sliderId => {
             const slider = document.getElementById(sliderId);

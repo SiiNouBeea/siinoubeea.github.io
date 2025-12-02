@@ -63,6 +63,8 @@ class UIManager {
             document.getElementById('color-preview').style.backgroundColor = this.value;
         });
 
+        this.bindEvent('screenshot', 'click', () => this.editor.exportImage());
+        
         // 原按钮改为弹窗
         this.bindEvent('add-point-light', 'click', () => this.showLightModal('point'));
         this.bindEvent('remove-point-light', 'click', () => {

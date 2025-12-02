@@ -369,15 +369,52 @@ class SceneManager {
         this.scene.remove(object);
     }
 
+    // 在 main.js 的 SceneManager 类中修改 exportToImage 方法
     exportToImage() {
+        // 保存当前灯光辅助线状态
+        const lightHelpersVisible = this.getLightHelpersVisibility();
+
+        // 隐藏灯光辅助线
+        if (window.webglEditor && window.webglEditor.lightManager) {
+            window.webglEditor.lightManager.toggleLightHelpers(false);
+        }
+
+        // 渲染一帧确保场景更新
         this.renderer.render(this.scene, this.camera);
+
+        // 导出图像
         const dataURL = this.renderer.domElement.toDataURL('image/png');
-        
+
+        // 恢复灯光辅助线状态
+        if (window.webglEditor && window.webglEditor.lightManager) {
+            window.webglEditor.lightManager.toggleLightHelpers(lightHelpersVisible);
+        }
+
+        // 下载图像
         const link = document.createElement('a');
         link.download = `scene-${Date.now()}.png`;
         link.href = dataURL;
         link.click();
     }
+
+    // 添加获取灯光辅助线可见性的方法
+    getLightHelpersVisibility() {
+        // 默认认为辅助线是可见的，除非有明确隐藏
+        if (window.webglEditor && window.webglEditor.lightManager) {
+            const lightManager = window.webglEditor.lightManager;
+            // 检查任意一个辅助线是否可见来判断整体状态
+            if (lightManager.directionalLights.length > 0 &&
+                lightManager.directionalLights[0].userData.helper) {
+                return lightManager.directionalLights[0].userData.helper.visible;
+            }
+            if (lightManager.pointLights.length > 0 &&
+                lightManager.pointLights[0].userData.helper) {
+                return lightManager.pointLights[0].userData.helper.visible;
+            }
+        }
+        return true; // 默认可见
+    }
+
 }
 
 // 当页面加载完成后初始化应用
