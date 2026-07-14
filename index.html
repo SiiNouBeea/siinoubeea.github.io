@@ -5,27 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiiNouBeea - 项目展示</title>
     <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="css/styles_index.css">
 </head>
 <body>
-    <header>
+
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">主页</a>
+                <a href="HandsOn/计算机图形学/index.html" class="nav-link">图形学</a>
+                <a href="HandsOn/医学信息系统/index.html" class="nav-link">医学影像</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
+    <!-- ========== Hero 区域 ========== -->
+    <header class="hero">
         <div class="container">
-            <h1>SiiNouBeea 项目展示</h1>
-            <p>欢迎来到我的项目主页</p>
+            <h1 class="animate-on-scroll">SiiNouBeea 项目展示</h1>
+            <p class="animate-on-scroll delay-1">欢迎来到我的项目主页 — 记录学习、探索与创造</p>
         </div>
     </header>
 
+    <!-- ========== 主要内容 ========== -->
     <main class="container">
+        <!-- 个人项目 -->
         <section class="projects">
-            <h2>个人项目</h2>
-            <div class="project-category">
+            <h2 class="section-title">个人项目</h2>
+            <div class="project-category animate-on-scroll">
                 <h3>Web应用开发</h3>
                 <div class="project-grid">
                     <div class="project-card">
                         <h4>Minecraft-BeeaNexus-Web</h4>
                         <p class="project-description">一个基于Flask的Minecraft服务器管理面板，旨在简化Minecraft服务器管理任务，特别是处理白名单申请。</p>
                         <div class="project-links">
-                            <a href="https://github.com/SiiNouBeea/Minecraft-BeeaNexus-Web" target="_blank" class="btn">查看仓库</a>
+                            <a href="https://github.com/SiiNouBeea/Minecraft-BeeaNexus-Web" target="_blank" class="btn btn-primary">查看仓库</a>
                         </div>
                         <div class="project-tags">
                             <span class="tag">Flask</span>
@@ -37,15 +58,16 @@
 
         <!-- 课程学习项目 -->
         <section class="projects">
-            <h2>课程学习项目</h2>
-            <div class="project-category">
+            <h2 class="section-title">课程学习项目</h2>
+
+            <div class="project-category animate-on-scroll">
                 <h3>软件工程</h3>
                 <div class="project-grid">
                     <div class="project-card">
                         <h4>Minecraft-BeeaNexus</h4>
                         <p class="project-description">一个专为Minecraft服务器打造的客户端-服务端管理应用。</p>
                         <div class="project-links">
-                            <a href="https://github.com/SiiNouBeea/BeeaNexus" target="_blank" class="btn">查看仓库</a>
+                            <a href="https://github.com/SiiNouBeea/BeeaNexus" target="_blank" class="btn btn-primary">查看仓库</a>
                         </div>
                         <div class="project-tags">
                             <span class="tag">桌面应用系统</span>
@@ -54,16 +76,15 @@
                 </div>
             </div>
 
-            <div class="project-category">
+            <div class="project-category animate-on-scroll delay-1">
                 <h3>计算机图形学</h3>
                 <div class="project-grid">
                     <div class="project-card">
                         <h4>课程大作业</h4>
-                        <p class="project-description">围绕“情”的主题，设计三维环境下的应用。</p>
-                        <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/计算机图形学/大作业" target="_blank" class="btn">查看仓库</a>
-                        <a href="HandsOn/计算机图形学/大作业/index.html" target="_blank" class="btn">在线展示</a>
+                        <p class="project-description">围绕"情"的主题，设计三维环境下的应用。</p>
                         <div class="project-links">
-
+                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/计算机图形学/大作业" target="_blank" class="btn btn-primary">查看仓库</a>
+                            <a href="HandsOn/计算机图形学/大作业/index.html" target="_blank" class="btn btn-secondary">在线展示</a>
                         </div>
                         <div class="project-tags">
                             <span class="tag">团队项目</span>
@@ -74,8 +95,8 @@
                         <h4>课程实验</h4>
                         <p class="project-description">计算机图形学课程实验。</p>
                         <div class="project-links">
-                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/计算机图形学" target="_blank" class="btn">查看仓库</a>
-                            <a href="HandsOn/计算机图形学/index.html" target="_blank" class="btn">在线展示</a>
+                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/计算机图形学" target="_blank" class="btn btn-primary">查看仓库</a>
+                            <a href="HandsOn/计算机图形学/index.html" target="_blank" class="btn btn-secondary">在线展示</a>
                         </div>
                         <div class="project-tags">
                             <span class="tag">实验记录</span>
@@ -84,14 +105,14 @@
                 </div>
             </div>
 
-            <div class="project-category">
+            <div class="project-category animate-on-scroll delay-2">
                 <h3>图像处理与机器学习</h3>
                 <div class="project-grid">
                     <div class="project-card">
                         <h4>课程实验</h4>
                         <p class="project-description">图像处理课程实验。</p>
                         <div class="project-links">
-                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/图像处理" target="_blank" class="btn">查看仓库</a>
+                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/图像处理" target="_blank" class="btn btn-primary">查看仓库</a>
                         </div>
                         <div class="project-tags">
                             <span class="tag">实验记录</span>
@@ -100,98 +121,65 @@
                 </div>
             </div>
 
-            <h2>课程学习项目</h2>
-            <div class="project-category">
+            <div class="project-category animate-on-scroll delay-3">
                 <h3>医学信息系统</h3>
                 <div class="project-grid">
                     <div class="project-card">
                         <h4>医学影像浏览器</h4>
                         <p class="project-description">在浏览器中对DICOM影像进行基础操作。</p>
                         <div class="project-links">
-                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/医学信息系统" target="_blank" class="btn">查看仓库</a>
-                            <a href="HandsOn/医学信息系统/index.html" target="_blank" class="btn">在线展示</a>
+                            <a href="https://github.com/SiiNouBeea/siinoubeea.github.io/tree/master/HandsOn/医学信息系统" target="_blank" class="btn btn-primary">查看仓库</a>
+                            <a href="HandsOn/医学信息系统/index.html" target="_blank" class="btn btn-secondary">在线展示</a>
                         </div>
                         <div class="project-tags">
-                            <span class="tag">课程设计</span> <span class="tag">DICOM</span>
+                            <span class="tag">课程设计</span>
+                            <span class="tag">DICOM</span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!--
-            <div class="project-category">
-                <h3>主标题</h3>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <h4>次标题</h4>
-                        <p class="project-description">描述</p>
-                        <div class="project-links">
-                            <a href="链接" target="_blank" class="btn">查看仓库</a>
-                        </div>
-                        <div class="project-tags">
-                            <span class="tag">标签1</span>
-                            <span class="tag">标签2</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            -->
         </section>
 
         <!-- 其他项目 -->
         <section class="projects">
-            <h2>其他项目</h2>
+            <h2 class="section-title">其他项目</h2>
 
-            <div class="project-category">
+            <div class="project-category animate-on-scroll">
                 <h3>小游戏</h3>
-                <div class="project-card">
-                    <h4>贪吃蛇游戏</h4>
-                    <p class="project-description">经典的贪吃蛇游戏实现，具有加速功能和特殊道具。</p>
-                    <div class="project-links">
-                        <a href="snake_game.html" target="_blank" class="btn">开始游戏</a>
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">小游戏</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-category">
-                <h3>奇怪小工具</h3>
-                <div class="project-card">
-                    <h4>Markdown浏览器</h4>
-                    <p class="project-description">在网页上浏览Markdown文件。</p>
-                    <div class="project-links">
-                        <a href="HandsOn/小组件/MDV.html" target="_blank" class="btn">立即进入</a>
-                    </div>
-                    <div class="project-tags">
-                        <span class="tag">Markdown</span> <span class="tag">在线</span>
-                    </div>
-                </div>
-            </div>
-
-            <!--
-            <div class="project-category">
-                <h3>主标题</h3>
                 <div class="project-grid">
                     <div class="project-card">
-                        <h4>次标题</h4>
-                        <p class="project-description">描述</p>
+                        <h4>贪吃蛇游戏</h4>
+                        <p class="project-description">经典的贪吃蛇游戏实现，具有加速功能和特殊道具。</p>
                         <div class="project-links">
-                            <a href="链接" target="_blank" class="btn">查看仓库</a>
+                            <a href="HandsOn/小组件/snake_game.html" target="_blank" class="btn btn-primary">开始游戏</a>
                         </div>
                         <div class="project-tags">
-                            <span class="tag">标签1</span>
-                            <span class="tag">标签2</span>
+                            <span class="tag">小游戏</span>
                         </div>
                     </div>
                 </div>
             </div>
-            -->
 
+            <div class="project-category animate-on-scroll delay-1">
+                <h3>奇怪小工具</h3>
+                <div class="project-grid">
+                    <div class="project-card">
+                        <h4>Markdown浏览器</h4>
+                        <p class="project-description">在网页上浏览Markdown文件。</p>
+                        <div class="project-links">
+                            <a href="HandsOn/小组件/MDV.html" target="_blank" class="btn btn-primary">立即进入</a>
+                        </div>
+                        <div class="project-tags">
+                            <span class="tag">Markdown</span>
+                            <span class="tag">在线</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="about">
+        <!-- 关于我 -->
+        <section class="about animate-on-scroll">
             <h2>关于我</h2>
             <p>还在学习中，做点自己喜欢的事情，还会继续努力。</p>
             <p>如果您对我的项目感兴趣或有任何问题，请随时通过以下方式联系我：</p>
@@ -202,10 +190,20 @@
         </section>
     </main>
 
-    <footer>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
         <div class="container">
-            <span class="neon-signature">SiiNouBeea</span>
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/SiiNouBeea" target="_blank">GitHub</a>
+                    <a href="https://space.bilibili.com/498538389" target="_blank">BiliBili</a>
+                </div>
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
         </div>
     </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

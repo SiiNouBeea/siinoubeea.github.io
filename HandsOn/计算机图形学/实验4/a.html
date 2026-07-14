@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/design-system.css">
     <link rel="stylesheet" href="../../../css/styles_experiments.css">
     <title>旋转的立方体</title>
     
@@ -71,7 +72,33 @@
     <script type="text/javascript" src="js/a.js"></script>
 </head>
 <body onload="initCube()">
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../../index.html" class="nav-logo">
+                <img src="../../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html" class="nav-link">图形学</a>
+                <a href="../index.html" class="nav-link active">实验4</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
     <div class="experiment-page">
+        <div class="breadcrumb">
+            <a href="../../../index.html">主页</a>
+            <span class="separator">›</span>
+            <a href="../../index.html">计算机图形学</a>
+            <span class="separator">›</span>
+            <a href="../index.html">实验4</a>
+            <span class="separator">›</span>
+            <span class="current">旋转的立方体</span>
+        </div>
+
         <h1 class="experiment-title">实验4 - 旋转的立方体</h1>
 
         <div class="experiment-description">
@@ -85,29 +112,37 @@
         </div>
 
         <div class="controls-wrapper">
-            <h3 style="color: #ffffff; margin-top: 0; text-align: center;">立方体控制面板</h3>
+            <h3 style="margin-top: 0; text-align: center; color: var(--text-primary);">立方体控制面板</h3>
             <div class="controls-grid">
                 <div class="control-group">
                     <legend>旋转控制</legend>
-                    <button id="xbutton" onclick="changeAxis('x')">X轴旋转</button>
-                    <button id="ybutton" onclick="changeAxis('y')">Y轴旋转</button>
-                    <button id="zbutton" onclick="changeAxis('z')">Z轴旋转</button>
+                    <button id="xbutton" onclick="changeAxis('x')" class="btn btn-sm btn-secondary">X轴旋转</button>
+                    <button id="ybutton" onclick="changeAxis('y')" class="btn btn-sm btn-secondary">Y轴旋转</button>
+                    <button id="zbutton" onclick="changeAxis('z')" class="btn btn-sm btn-secondary">Z轴旋转</button>
                 </div>
 
                 <div class="control-group">
                     <legend>其他操作</legend>
-                    <button id="clearbutton" onclick="clearCanvas()">清除场景</button>
-                    <input type="color" id="colorPicker" value="#FF0000" onchange="updateColor()" 
-                           style="width: 100%; height: 40px; margin-top: 10px;">
+                    <button id="clearbutton" onclick="clearCanvas()" class="btn btn-sm btn-secondary">清除场景</button>
+                    <input type="color" id="colorPicker" value="#FF0000" onchange="updateColor()"
+                           style="width: 100%; height: 40px; margin-top: 10px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer;">
                 </div>
             </div>
         </div>
 
-        <a href="index.html" class="experiment-back-button">返回上一页</a>
+        <a href="index.html" class="btn btn-primary">返回实验列表</a>
     </div>
 
-    <div class="signature-container">
-        <p class="neon-signature">SiNouBeea</p>
-    </div>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../../js/main.js"></script>
 </body>
 </html>

@@ -4,38 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>计算机图形学实验 - ③</title>
+    <link rel="stylesheet" href="../../../css/design-system.css">
     <link rel="stylesheet" href="../../../css/styles_experiments.css">
     <link rel="icon" type="image/png" href="../../../img/logo.png">
 </head>
-    <body>
-        <header class="experiments-header">
-            <div class="container">
-                <h1>第三次实验作业</h1>
-                <p style="color: #66ccff; font-size: 0.9rem; white-space: nowrap;">2025-09-30</p>
-                <span>熟悉二维图形变换，包括基本变换的类型，缩放、平移、旋转，能够区别刚体和非刚体变换。能够了解常见变换的齐次矩阵表示，并能应用矩阵计算相应点在空间中经过单一变换后的结果</span>
+<body>
+
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../../index.html" class="nav-logo">
+                <img src="../../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html" class="nav-link active">图形学</a>
             </div>
-        </header>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
+    <!-- ========== 头部 ========== -->
+    <header class="experiments-header">
+        <div class="container">
+            <h1>第三次实验作业</h1>
+            <span class="date">2025-09-30</span>
+            <p>熟悉二维图形变换，包括基本变换的类型，缩放、平移、旋转，能够区别刚体和非刚体变换。能够了解常见变换的齐次矩阵表示，并能应用矩阵计算相应点在空间中经过单一变换后的结果</p>
+        </div>
+    </header>
+
+    <!-- ========== 主要内容 ========== -->
+    <main class="container experiment-content">
+        <div class="breadcrumb">
+            <a href="../../../index.html">主页</a>
+            <span class="separator">›</span>
+            <a href="../../index.html">计算机图形学</a>
+            <span class="separator">›</span>
+            <span class="current">实验3</span>
+        </div>
 
         <div class="task-list">
-            <a href="../index.html" class="back-link">← 返回实验列表</a>
             <h2 class="section-title">实验要求：Web二维图形变换应用</h2>
 
             <div class="task-item">
                 <span>任务 A</span>
                 <div class="task-description">参照旋转的正方形示例，实现一个完整的基于Web的二维图形变换应用。要求如下：
-                    <p>1.界面可自由设计</p>
-                    <p>2.在画布上自选绘制一个图形，可以是简单的正方形、三角形、或圆形，也可是由多个基本形状复合而成的形状</p>
-                    <p>3.界面提供变换的选择，选项包括：平移、旋转、缩放</p>
+                    <p>1. 界面可自由设计</p>
+                    <p>2. 在画布上自选绘制一个图形，可以是简单的正方形、三角形、或圆形，也可是由多个基本形状复合而成的形状</p>
+                    <p>3. 界面提供变换的选择，选项包括：平移、旋转、缩放</p>
                     <p>——针对平移，通过控件输入沿X和Y轴的平移量，在画布同步绘制平移结果</p>
                     <p>——针对旋转，默认绕Z轴旋转，通过控件输入角度，在画布同步绘制旋转结果</p>
-                    <p>——针对缩放，通过控件选择缩放的轴及数值，在画布同步绘制旋转结果</p></div>
+                    <p>——针对缩放，通过控件选择缩放的轴及数值，在画布同步绘制旋转结果</p>
+                </div>
             </div>
 
-            <a href="a.html" class="demo-button">演示</a>
+            <a href="a.html" class="btn btn-primary">演示</a>
         </div>
+    </main>
 
-        <div class="signature-container">
-            <p class="neon-signature">SiNouBeea</p>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
         </div>
-    </body>
+    </footer>
+
+    <script src="../../../js/main.js"></script>
+</body>
 </html>

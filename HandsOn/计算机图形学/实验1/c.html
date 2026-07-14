@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../../../img/logo.png">
+    <link rel="stylesheet" href="../../../css/design-system.css">
     <link rel="stylesheet" href="../../../css/styles_experiments.css">
     <title>Chapter 1. First WebGL Demo</title>
     <!-- 顶点着色器和片元着色器代码 -->
@@ -32,7 +33,33 @@
     <script type="text/javascript" src="js/c.js"></script>
 </head>
 <body>
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../../index.html" class="nav-logo">
+                <img src="../../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html" class="nav-link">图形学</a>
+                <a href="../index.html" class="nav-link active">实验1</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
     <div class="experiment-page">
+        <div class="breadcrumb">
+            <a href="../../../index.html">主页</a>
+            <span class="separator">›</span>
+            <a href="../../index.html">计算机图形学</a>
+            <span class="separator">›</span>
+            <a href="../index.html">实验1</a>
+            <span class="separator">›</span>
+            <span class="current">任务 C</span>
+        </div>
+
         <h1 class="experiment-title">任务 C - 同时绘制三角形和四边形</h1>
 
         <div class="experiment-description">
@@ -43,11 +70,19 @@
             <canvas id="trisquare-canvas" class="experiment-canvas" width="500" height="500"></canvas>
         </div>
 
-        <a href="index.html" class="experiment-back-button">返回上一页</a>
+        <a href="index.html" class="btn btn-primary">返回实验列表</a>
     </div>
 
-    <div class="signature-container">
-        <p class="neon-signature">SiNouBeea</p>
-    </div>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../../js/main.js"></script>
 </body>
 </html>

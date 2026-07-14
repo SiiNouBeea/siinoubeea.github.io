@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人脸表情情绪识别系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-bg: #34495e;
+            --border-color: #ddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .stats-box, .history-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            background: var(--light-bg);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #e8f4fc;
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-section {
+            margin-top: 30px;
+        }
+
+        .image-container {
+            position: relative;
+            max-width: 100%;
+            margin: 20px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .image-container img {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .result-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .detection-item {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .emotion-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .emotion-angry { background: #ffebee; color: #c62828; }
+        .emotion-happy { background: #e8f5e9; color: #2e7d32; }
+        .emotion-sad { background: #e3f2fd; color: #1565c0; }
+        .emotion-neutral { background: #f5f5f5; color: #424242; }
+        .emotion-surprise { background: #fff3e0; color: #ef6c00; }
+        .emotion-fear { background: #f3e5f5; color: #7b1fa2; }
+        .emotion-disgust { background: #e8f5e9; color: #2e7d32; }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            font-size: 40px;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s;
+        }
+
+        .history-item:hover {
+            background: var(--light-bg);
+        }
+
+        .history-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1><i class="fas fa-smile"></i> 人脸表情情绪识别系统</h1>
+            <p>基于深度学习的人脸表情识别，支持图片和视频分析，实时检测愤怒、开心、伤心、惊讶等7种情绪</p>
+        </div>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 上传和处理区域 -->
+            <div class="upload-section">
+                <h2><i class="fas fa-cloud-upload-alt"></i> 上传文件</h2>
+
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-file-upload"></i>
+                    <p>点击选择文件或拖拽文件到这里</p>
+                    <p class="file-types">支持格式: JPG, PNG, GIF, MP4, AVI</p>
+                    <p class="file-size">最大文件大小: 50MB</p>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*,video/*">
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-bar">
+                    <div class="progress" id="uploadProgress"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn" onclick="openCamera()">
+                        <i class="fas fa-camera"></i> 实时摄像头
+                    </button>
+                    <button class="btn btn-success" onclick="testSample()">
+                        <i class="fas fa-vial"></i> 测试样例
+                    </button>
+                </div>
+
+                <!-- 加载动画 -->
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>正在分析中，请稍候...</p>
+                </div>
+
+                <!-- 预览和结果区域 -->
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <h3><i class="fas fa-image"></i> 处理结果</h3>
+                    <div class="image-container">
+                        <img id="resultImage" src="" alt="处理结果">
+                    </div>
+
+                    <div class="result-info">
+                        <h4><i class="fas fa-info-circle"></i> 检测结果</h4>
+                        <p id="resultSummary"></p>
+                        <div id="detectionResults"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="sidebar">
+                <!-- 情绪统计 -->
+                <div class="stats-box">
+                    <h2><i class="fas fa-chart-bar"></i> 情绪统计</h2>
+                    <div style="height: 200px;">
+                        <canvas id="emotionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 历史记录 -->
+                <div class="history-box">
+                    <h2><i class="fas fa-history"></i> 最近记录</h2>
+                    <div class="history-list" id="historyList">
+                        <!-- 历史记录将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能特性 -->
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-robot"></i>
+                <h3>深度学习模型</h3>
+                <p>基于CNN深度学习架构，在FER2013数据集上训练</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-video"></i>
+                <h3>视频支持</h3>
+                <p>支持MP4、AVI等视频格式，自动逐帧分析</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>实时检测</h3>
+                <p>实时摄像头流处理，毫秒级响应</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-database"></i>
+                <h3>数据记录</h3>
+                <p>所有分析结果自动保存到数据库</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>人脸表情情绪识别系统 &copy; 2024 | 基于MTCNN和深度学习</p>
+    </footer>
+
+    <script>
+        // DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const loading = document.getElementById('loading');
+        const previewSection = document.getElementById('previewSection');
+        const resultImage = document.getElementById('resultImage');
+        const resultSummary = document.getElementById('resultSummary');
+        const detectionResults = document.getElementById('detectionResults');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const historyList = document.getElementById('historyList');
+
+        // 初始化图表
+        let emotionChart = null;
+        initChart();
+        loadHistory();
+        loadStatistics();
+
+        // 拖拽上传功能
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3498db';
+            uploadArea.style.background = '#e8f4fc';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.background = '#f8f9fa';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.background = '#f8f9fa';
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // 点击上传
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // 处理文件上传
+        function handleFile(file) {
+            // 检查文件类型
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/avi'];
+            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|mp4|avi)$/i)) {
+                alert('不支持的文件类型。请上传图片或视频文件。');
+                return;
+            }
+
+            // 检查文件大小
+            if (file.size > 50 * 1024 * 1024) {
+                alert('文件太大。最大支持50MB。');
+                return;
+            }
+
+            // 显示加载动画
+            loading.style.display = 'block';
+            previewSection.style.display = 'none';
+
+            // 创建FormData
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // 显示上传进度
+            uploadProgress.style.width = '0%';
+
+            // 发送请求
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+
+                if (data.error) {
+                    alert('错误: ' + data.error);
+                    return;
+                }
+
+                if (data.status === 'processing') {
+                    alert('视频正在后台处理，请稍后查看结果');
+                    return;
+                }
+
+                // 显示结果
+                resultImage.src = data.result_url;
+                resultSummary.textContent = `检测到 ${data.detection_count} 个人脸，处理时间: ${data.processing_time}秒`;
+
+                // 显示检测结果
+                displayDetections(data.detections);
+
+                previewSection.style.display = 'block';
+
+                // 滚动到结果区域
+                previewSection.scrollIntoView({ behavior: 'smooth' });
+
+                // 重新加载历史记录
+                loadHistory();
+                loadStatistics();
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                console.error('上传错误:', error);
+                alert('上传失败: ' + error.message);
+            });
+        }
+
+        // 显示检测结果
+        function displayDetections(detections) {
+            detectionResults.innerHTML = '';
+
+            detections.forEach((detection, index) => {
+                const detectionDiv = document.createElement('div');
+                detectionDiv.className = 'detection-item';
+
+                // 情绪对应的CSS类
+                const emotionClass = getEmotionClass(detection.emotion);
+
+                detectionDiv.innerHTML = `
+                    <h4>人脸 #${detection.id}</h4>
+                    <div class="emotion-badge ${emotionClass}">
+                        ${detection.emotion} (${detection.confidence}%)
+                    </div>
+                    <p><strong>位置:</strong> X: ${detection.box.x}, Y: ${detection.box.y}</p>
+                    <p><strong>尺寸:</strong> ${detection.box.width} × ${detection.box.height} 像素</p>
+                    <p><strong>详细概率:</strong></p>
+                    <div id="probabilities-${index}"></div>
+                `;
+
+                detectionResults.appendChild(detectionDiv);
+
+                // 显示详细概率
+                displayProbabilities(detection.all_probabilities, index);
+            });
+        }
+
+        // 显示概率分布
+        function displayProbabilities(probabilities, index) {
+            const container = document.getElementById(`probabilities-${index}`);
+
+            for (const [emotion, prob] of Object.entries(probabilities)) {
+                const probDiv = document.createElement('div');
+                probDiv.style.marginBottom = '5px';
+                probDiv.innerHTML = `
+                    <span style="display: inline-block; width: 100px;">${emotion}:</span>
+                    <div style="display: inline-block; width: 150px; background: #ddd; border-radius: 3px; overflow: hidden;">
+                        <div style="width: ${prob}%; background: #3498db; height: 20px;"></div>
+                    </div>
+                    <span style="margin-left: 10px;">${prob.toFixed(1)}%</span>
+                `;
+                container.appendChild(probDiv);
+            }
+        }
+
+        // 获取情绪对应的CSS类
+        function getEmotionClass(emotion) {
+            const emotionMap = {
+                'Angry（愤怒）': 'emotion-angry',
+                'Happy（开心）': 'emotion-happy',
+                'Sad（伤心）': 'emotion-sad',
+                'Neutral（中性）': 'emotion-neutral',
+                'Surprise（惊讶）': 'emotion-surprise',
+                'Fear（恐惧）': 'emotion-fear',
+                'Disgust（厌恶）': 'emotion-disgust'
+            };
+
+            return emotionMap[emotion] || 'emotion-neutral';
+        }
+
+        // 初始化图表
+        function initChart() {
+            const ctx = document.getElementById('emotionChart').getContext('2d');
+            emotionChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#e74c3c', // 愤怒
+                            '#2ecc71', // 厌恶
+                            '#9b59b6', // 恐惧
+                            '#f1c40f', // 开心
+                            '#3498db', // 伤心
+                            '#e67e22', // 惊讶
+                            '#95a5a6'  // 中性
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 加载统计
+        function loadStatistics() {
+            fetch('/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    emotionChart.data.labels = data.emotions;
+                    emotionChart.data.datasets[0].data = data.counts;
+                    emotionChart.update();
+                });
+        }
+
+        // 加载历史记录
+        function loadHistory() {
+            fetch('/api/history?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    historyList.innerHTML = '';
+
+                    data.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+
+                        const date = new Date(item.upload_time).toLocaleString();
+
+                        historyItem.innerHTML = `
+                            <img src="${item.result_url || '/static/placeholder.png'}" alt="${item.filename}">
+                            <div>
+                                <strong>${item.filename}</strong>
+                                <p style="color: #666; font-size: 0.9em;">${date}</p>
+                                <p style="color: #3498db; font-size: 0.9em;">检测到 ${item.detection_count} 个人脸</p>
+                            </div>
+                        `;
+
+                        historyList.appendChild(historyItem);
+                    });
+                });
+        }
+
+        // 打开实时摄像头页面
+        function openCamera() {
+            window.open('/realtime', '_blank');
+        }
+
+        // 测试样例
+        function testSample() {
+            window.open('/test', '_blank');
+        }
+    </script>
+</body>
+</html>

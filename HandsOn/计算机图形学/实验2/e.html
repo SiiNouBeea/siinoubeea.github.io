@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/png" href="../../../img/logo.png">
-<link rel="stylesheet" href="../../../css/styles_experiments.css">
+<link rel="stylesheet" href="../../../css/design-system.css">
+    <link rel="stylesheet" href="../../../css/styles_experiments.css">
 <title>Triangle Tessellation – Rotation & Level</title>
 
 <!-- ---------- 着色器 ---------- -->
@@ -28,47 +29,79 @@ void main(){ fColor = vec4(1.0, 0.0, 0.0, 1.0); }
 </head>
 
 <body>
-<div class="experiment-page">
-    <h1 class="experiment-title">实验要求2：基于Sierpinski Gasket的扩展图案绘制</h1>
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../../index.html" class="nav-logo">
+                <img src="../../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html" class="nav-link">图形学</a>
+                <a href="../index.html" class="nav-link active">实验2</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
+    <div class="experiment-page">
+        <div class="breadcrumb">
+            <a href="../../../index.html">主页</a>
+            <span class="separator">›</span>
+            <a href="../../index.html">计算机图形学</a>
+            <span class="separator">›</span>
+            <a href="../index.html">实验2</a>
+            <span class="separator">›</span>
+            <span class="current">Triangle Tessellation</span>
+        </div>
+
+        <h1 class="experiment-title">实验要求2：基于Sierpinski Gasket的扩展图案绘制</h1>
 
         <div class="experiment-description">
-                <div class="task-description">任务 C - 完成不同层次剖分效果的绘制，这里的绘制采用线框模式。</div>
-                <div class="task-description">任务 D - 任务c中剖分后的三角形添加旋转效果。假设没有旋转时，图中绘制的各个点的坐标分别为(x,y,z)，因只涉及二维平面，故有z=0。当图案在xoy平面上绕原点旋转时，即绕z轴逆时针旋转角度θ时，新的坐标(x',y',z')为x'=x*cos(θ)-y*sin(θ), y'=x*sin(θ)+y*cos(θ)。</div>
-                <div class="task-description">任务 E - 在任务d中，如果旋转角度根据点到原点的距离d设定，即有x'=x*cos(d*θ)-y*sin(d*θ), y'=x*sin(d*θ)+y*cos(d*θ)，其中，d=sqrt((x^2+y^2))。</div>
+            <p>任务 C - 完成不同层次剖分效果的绘制，这里的绘制采用线框模式。</p>
+            <p>任务 D - 任务c中剖分后的三角形添加旋转效果。</p>
+            <p>任务 E - 在任务d中，如果旋转角度根据点到原点的距离d设定。</p>
         </div>
 
-    <div class="canvas-container">
-        <h2 style="color: #ffffff; margin-bottom: 15px;">Triangle Tessellation</h2>
-        <canvas id="gl-canvas" class="experiment-canvas" width="600" height="600"></canvas>
+        <div class="canvas-container">
+            <h2 style="margin-bottom: 15px; color: var(--text-primary);">Triangle Tessellation</h2>
+            <canvas id="gl-canvas" class="experiment-canvas" width="600" height="600"></canvas>
+        </div>
+
+        <div class="controls-wrapper">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label>细分层次：</label>
+                    <input type="range" id="level-slider" min="0" max="7" value="0" oninput="updateLevel()" style="vertical-align: middle;">
+                    <span id="levShow">0</span>
+                </div>
+                <div class="control-group">
+                    <label>旋转角度：</label>
+                    <input type="range" id="angle-slider" min="0" max="360" value="60" oninput="updateAngle()" style="vertical-align: middle;">
+                    <span id="angShow">60°</span>
+                </div>
+                <div class="control-group">
+                    <label>扭转强度：</label>
+                    <input type="range" id="twist-slider" min="0" max="360" value="0" oninput="updateTwist()" style="vertical-align: middle;">
+                    <span id="twistShow">0°</span>
+                </div>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn btn-primary">返回实验列表</a>
     </div>
 
-    <div style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 12px; padding: 20px; margin: 20px 0; max-width: 600px;">
-        <div>
-            细分层次：
-            <input type="range" id="level-slider" min="0" max="7" value="0"
-                   oninput="updateLevel()" style="vertical-align: middle;">
-            <span id="levShow">0</span>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
         </div>
+    </footer>
 
-        <div>
-            旋转角度：
-            <input type="range" id="angle-slider" min="0" max="360" value="60"
-                   oninput="updateAngle()" style="vertical-align: middle;">
-            <span id="angShow">60°</span>
-        </div>
-
-        <div>
-            扭转强度：
-            <input type="range" id="twist-slider" min="0" max="360" value="0"
-                   oninput="updateTwist()" style="vertical-align: middle;">
-            <span id="twistShow">0°</span>
-        </div>
-    </div>
-
-    <a href="index.html" class="experiment-back-button">返回上一页</a>
-</div>
-    <div class="signature-container">
-        <p class="neon-signature">SiNouBeea</p>
-    </div>
+    <script src="../../../js/main.js"></script>
 </body>
 </html>

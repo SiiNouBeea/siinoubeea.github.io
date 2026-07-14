@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../../img/logo.png">
     <title>贪吃蛇游戏 - SiiNouBeea</title>
+    <link rel="stylesheet" href="../../css/design-system.css">
     <style>
         /* 重置默认样式 */
         * {
@@ -15,8 +16,8 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--bg-primary, #f5f7fa);
+            color: var(--text-primary, #333);
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
@@ -30,23 +31,11 @@
             padding: 0 20px;
         }
 
-        /* 页头样式 */
-        header {
-            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
-            color: white;
-            padding: 1rem 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        header h1 {
-            margin-bottom: 0.5rem;
-        }
-
         /* 主要内容区域 */
         main {
             flex: 1;
             padding: 2rem 0;
+            margin-top: var(--nav-height, 60px);
         }
 
         /* 游戏区域居中 */
@@ -150,20 +139,6 @@
             100% { filter: drop-shadow(0 0 15px var(--glow-color)); }
         }
 
-        /* 页脚 */
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: auto;
-        }
-
-        .neon-signature {
-            font-weight: bold;
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6;
-        }
-
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
@@ -174,21 +149,23 @@
                 width: 95vw;
                 height: auto;
             }
-
-            header h1 {
-                font-size: 1.5rem;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- 页头 -->
-    <header>
-        <div class="container">
-            <h1>贪吃蛇游戏</h1>
-            <p>经典贪吃蛇游戏体验</p>
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html" class="nav-link">主页</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
         </div>
-    </header>
+    </nav>
 
     <!-- 主要内容 -->
     <main>
@@ -215,13 +192,17 @@
         </div>
     </main>
 
-    <!-- 页脚 -->
-    <footer>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
         <div class="container">
-            <span class="neon-signature">SiiNouBeea</span>
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
         </div>
     </footer>
 
+    <script src="../../js/main.js"></script>
     <script>
         const CELL_SIZE = 20;
         const CANVAS_WIDTH = 600;
@@ -229,8 +210,8 @@
         const NORMAL_SPEED = 200;
         const BOOST_SPEED = 100;
         const BOOST_DURATION = 5000;
-        const BASE_BLUE_PROBABILITY = 0.03; // 基础生成概率
-        const BLUE_BLOCK_LIFESPAN = 40; // 蓝色方块持续步数
+        const BASE_BLUE_PROBABILITY = 0.03;
+        const BLUE_BLOCK_LIFESPAN = 40;
 
         class SnakeGame {
             constructor() {
@@ -257,7 +238,7 @@
                 this.glowColor = 'rgba(0, 255, 25, 0.8)';
 
                 this.bindEvents();
-                this.nowScore.textContent = this.score; // 初始化显示分数
+                this.nowScore.textContent = this.score;
             }
 
             bindEvents() {
@@ -292,7 +273,7 @@
                 this.score = 0;
                 this.isBoosting = false;
                 this.boostEndTime = 0;
-                this.nowScore.textContent = this.score; // 重置分数显示
+                this.nowScore.textContent = this.score;
             }
 
             generateFood(isBlue) {
@@ -316,21 +297,17 @@
 
             checkCollision() {
                 const head = this.snake[0];
-                // 屏幕边缘碰撞
                 if (head.x < 0 || head.x >= CANVAS_WIDTH / CELL_SIZE || head.y < 0 || head.y >= CANVAS_HEIGHT / CELL_SIZE) {
                     return true;
                 }
-                // 自身碰撞
                 return this.snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
             }
 
             updateGame() {
                 if (!this.isGameRunning) return;
 
-                // 更新方向
                 this.direction = this.nextDirection;
 
-                // 移动蛇
                 const head = { ...this.snake[0] };
                 switch (this.direction) {
                     case 'up': head.y--; break;
@@ -340,19 +317,17 @@
                 }
                 this.snake.unshift(head);
 
-                // 检查是否吃到食物
                 if (head.x === this.apple.x && head.y === this.apple.y) {
-                    this.score += 1; // 吃到苹果加1分
+                    this.score += 1;
                     if (this.isBoosting) {
-                        this.score += 1; // 加速状态下吃到苹果额外加1分
+                        this.score += 1;
                     }
                     this.apple = this.generateFood(false);
-                    this.nowScore.textContent = this.score; // 更新分数显示
+                    this.nowScore.textContent = this.score;
                 } else {
                     this.snake.pop();
                 }
 
-                // 处理蓝色方块生命周期
                 if (this.blueBlock) {
                     this.blueBlockLifespan--;
                     if (this.blueBlockLifespan <= 0) {
@@ -360,60 +335,48 @@
                     }
                 }
 
-                // 计算当前蓝色方块生成概率（加速状态下提升50%）
                 const currentBlueProbability = this.isBoosting
                     ? BASE_BLUE_PROBABILITY * 1.5
                     : BASE_BLUE_PROBABILITY;
 
-                // 每一步移动有概率生成蓝色方块（无蓝色方块时）
                 if (!this.blueBlock && Math.random() < currentBlueProbability) {
                     this.blueBlock = this.generateFood(true);
-                    this.blueBlockLifespan = BLUE_BLOCK_LIFESPAN; // 设置生命周期
+                    this.blueBlockLifespan = BLUE_BLOCK_LIFESPAN;
                 }
 
-                // 检查是否吃到蓝色道具
                 if (this.blueBlock && head.x === this.blueBlock.x && head.y === this.blueBlock.y) {
                     this.score += 2;
-                    this.nowScore.textContent = this.score; // 更新分数显示
+                    this.nowScore.textContent = this.score;
                     this.isBoosting = true;
                     this.boostEndTime = Date.now() + BOOST_DURATION;
                     this.blueBlock = null;
                 }
 
-                // 加速状态检查
                 if (this.isBoosting && Date.now() > this.boostEndTime) {
                     this.isBoosting = false;
                 }
 
-                // 碰撞检测
                 const collision = this.checkCollision();
                 if (collision) {
                     this.gameOver();
                     return;
                 }
 
-                // 绘制
                 this.draw();
 
-                // 设置游戏速度
                 const speed = this.isBoosting ? BOOST_SPEED : NORMAL_SPEED;
                 this.gameLoop = setTimeout(() => this.updateGame(), speed);
             }
 
             draw() {
-                // 清除画布
                 this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-                // 计算加速状态剩余时间比例，控制泛光强度和颜色
                 if (this.isBoosting) {
                     const now = Date.now();
                     const remainingBoostTime = this.boostEndTime - now;
                     const boostRatio = Math.max(0, remainingBoostTime / BOOST_DURATION);
-
-                    // 随时间减少，泛光效果减弱但仍然保持夸张
                     const glowIntensity = 0.1 + boostRatio * 0.7;
 
-                    // 每200ms切换一次颜色（蓝色和绿色之间）
                     if (now - this.lastGlowUpdate > 80000) {
                         this.lastGlowUpdate = now;
                         this.glowColor = this.glowColor === 'rgba(0, 255, 25, 0.8)'
@@ -428,22 +391,18 @@
                     this.canvas.classList.remove('glow');
                 }
 
-
-                // 绘制蛇
                 this.ctx.fillStyle = '#0f0';
                 this.snake.forEach((segment, index) => {
                     this.ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
                 });
 
-                // 绘制苹果 - 根据加速状态决定颜色
                 if (this.isBoosting) {
-                    this.ctx.fillStyle = '#800080'; // 紫色
+                    this.ctx.fillStyle = '#800080';
                 } else {
-                    this.ctx.fillStyle = '#f00'; // 红色
+                    this.ctx.fillStyle = '#f00';
                 }
                 this.ctx.fillRect(this.apple.x * CELL_SIZE, this.apple.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
 
-                // 绘制蓝色道具 - 随生命周期减少透明度
                 if (this.blueBlock) {
                     const opacity = this.blueBlockLifespan / BLUE_BLOCK_LIFESPAN;
                     this.ctx.fillStyle = `rgba(0, 0, 255, ${opacity})`;
@@ -462,7 +421,6 @@
             }
         }
 
-        // 初始化游戏
         new SnakeGame();
     </script>
 </body>

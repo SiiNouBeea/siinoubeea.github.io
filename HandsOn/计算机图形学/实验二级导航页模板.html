@@ -4,53 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>计算机图形学实验 - x</title>
+    <link rel="stylesheet" href="../../../css/design-system.css">
     <link rel="stylesheet" href="../../../css/styles_experiments.css">
     <link rel="icon" type="image/png" href="../../../img/logo.png">
 </head>
 <body>
+
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../../index.html" class="nav-logo">
+                <img src="../../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html" class="nav-link active">图形学</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
+    <!-- ========== 头部 ========== -->
     <header class="experiments-header">
         <div class="container">
             <h1>第X次实验作业</h1>
-            <p style="color: #66ccff; font-size: 0.9rem; white-space: nowrap;">YYYY - MM - DD</p>
-            <span>实验简述</span>
+            <span class="date">YYYY - MM - DD</span>
+            <p>实验简述</p>
         </div>
     </header>
 
-    <div class="task-list">
-        <a href="../index.html" class="back-link">← 返回实验列表</a>
-        <h2 class="section-title">实验要求1：实验要求</h2>
-
-        <div class="task-item">
-            <span>任务 A</span>
-            <div class="task-description">任务要求。</div>
+    <!-- ========== 主要内容 ========== -->
+    <main class="container experiment-content">
+        <div class="breadcrumb">
+            <a href="../../../index.html">主页</a>
+            <span class="separator">›</span>
+            <a href="../../index.html">计算机图形学</a>
+            <span class="separator">›</span>
+            <span class="current">实验X</span>
         </div>
 
-        <div class="task-item">
-            <span>任务 B</span>
-            <div class="task-description">任务要求。</div>
+        <div class="task-list">
+            <h2 class="section-title">实验要求1：实验要求</h2>
+
+            <div class="task-item">
+                <span>任务 A</span>
+                <div class="task-description">任务要求。</div>
+            </div>
+
+            <div class="task-item">
+                <span>任务 B</span>
+                <div class="task-description">任务要求。</div>
+            </div>
+
+            <a href="b.html" class="btn btn-primary">演示</a>
+
+            <h2 class="section-title">实验要求2：实验要求</h2>
+
+            <div class="task-item">
+                <span>任务 C</span>
+                <div class="task-description">任务要求。</div>
+            </div>
+
+            <div class="task-item">
+                <span>任务 D</span>
+                <div class="task-description">任务要求。</div>
+            </div>
+
+            <a href="e.html" class="btn btn-primary">演示</a>
         </div>
+    </main>
 
-        <a href="b.html" class="demo-button">演示</a>
-
-        <h2 class="section-title">实验要求2：实验要求。</h2>
-
-        <div class="task-item">
-            <span>任务 C</span>
-            <div class="task-description">任务要求。</div>
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
         </div>
+    </footer>
 
-        <div class="task-item">
-            <span>任务 D</span>
-            <div class="task-description">任务要求。</div>
-        </div>
-
-
-        <a href="e.html" class="demo-button">演示</a>
-    </div>
-
-    <div class="signature-container">
-        <p class="neon-signature">SiNouBeea</p>
-    </div>
-
+    <script src="../../../js/main.js"></script>
 </body>
 </html>
