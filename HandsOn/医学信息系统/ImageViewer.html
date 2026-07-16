@@ -2,115 +2,189 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>医学影像浏览器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>DICOM 医学影像浏览器</title>
     <link rel="icon" type="image/png" href="../../img/logo.png">
-    <link rel="stylesheet" href="../../css/design-system.css">
+
+    <!-- 第三方库 -->
+    <script src="lib/dicomParser.min.js"></script>
+    <script src="lib/hammer.min.js"></script>
+    <script src="lib/cornerstone.min.js"></script>
+    <script src="lib/cornerstoneMath.min.js"></script>
+    <script src="lib/cornerstoneTools.min.js"></script>
+    <script src="lib/cornerstoneWebImageLoader.min.js"></script>
+    <script src="lib/cornerstoneWADOImageLoader.bundle.min.js"></script>
+
+    <!-- 样式 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- ========== 导航栏 ========== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="../../index.html" class="nav-logo">
-                <img src="../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
-                <span>SiiNouBeea</span>
-            </a>
-            <div class="nav-links">
-                <a href="../../index.html" class="nav-link">主页</a>
-                <a href="index.html" class="nav-link active">医学影像</a>
-            </div>
-            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
-        </div>
-    </nav>
 
-    <div class="container">
-        <h1>医学影像浏览器</h1>
-
-        <!-- 控制面板 -->
-        <div class="control-panel">
-
-            <div class="control-group">
-                <span>*导入图像:</span>
-                <input type="file" id="imageInput" accept="image/*">
-                <span>导入标记[可选]:</span>
-                <input type="file" id="noteInput" accept=".note">
-            </div>
-
-
-
-            <div class="control-group">
-                <span>缩放:</span>
-                <input type="range" id="zoomSlider" min="0.1" max="3" step="0.1" value="1">
-                <button id="resetZoom">重置</button>
-            </div>
-
-            <!-- 保留标记颜色选择器 -->
-            <div class="control-group">
-                <span>标记颜色:</span>
-                <input type="color" id="markerColor" value="#ff0000">
-            </div>
-
-            <button id="exportNote">导出标记</button>
+    <!-- ========== 顶部工具栏 ========== -->
+    <header class="toolbar">
+        <div class="toolbar-brand">
+            <img src="../../img/logo.png" alt="DICOM" class="logo">
+            <h1>DICOM 影像浏览器</h1>
         </div>
 
-        <!-- 主要内容区域 -->
-        <div class="main-content">
-            <!-- 左侧区域 -->
-            <div class="left-sidebar">
-                <div class="marker-list-sidebar">
-                    <h3>使用说明</h3>
-                    <p>1. 导入医学影像和标记文件。</p>
-                    <p>2. 缩放图像以适应窗口。</p>
-                    <p>3. 左键按住鼠标，拖动图像。</p>
-                    <p>4. 右键图像位置添加标记。</p>
-                    <p>5. 点击标记修改标注。</p>
+        <div class="toolbar-separator"></div>
+
+        <!-- 布局切换 -->
+        <div class="toolbar-group">
+            <span class="toolbar-label">布局</span>
+            <button class="tool-btn layout-btn active" data-layout="1x1" title="单视图">
+                <span class="icon">⊞</span><span class="label">1×1</span>
+            </button>
+            <button class="tool-btn layout-btn" data-layout="1x2" title="左右双视图">
+                <span class="icon">⊞</span><span class="label">1×2</span>
+            </button>
+            <button class="tool-btn layout-btn" data-layout="2x1" title="上下双视图">
+                <span class="icon">⊞</span><span class="label">2×1</span>
+            </button>
+            <button class="tool-btn layout-btn" data-layout="2x2" title="四视图">
+                <span class="icon">⊞</span><span class="label">2×2</span>
+            </button>
+        </div>
+
+        <div class="toolbar-separator"></div>
+
+        <!-- 同步控制 -->
+        <div class="toolbar-group">
+            <span class="toolbar-label">同步</span>
+            <button class="tool-btn sync-on" data-sync="scroll" title="滚动同步">📜</button>
+            <button class="tool-btn sync-on" data-sync="zoom" title="缩放同步">🔍</button>
+            <button class="tool-btn sync-on" data-sync="voi" title="窗宽窗位同步">☀</button>
+        </div>
+
+        <div class="toolbar-separator"></div>
+
+        <!-- 预设 -->
+        <div class="toolbar-group">
+            <span class="toolbar-label">预设</span>
+            <select id="presetSelect" class="preset-select">
+                <option value="">— 选择预设 —</option>
+            </select>
+        </div>
+
+        <div class="toolbar-separator"></div>
+
+        <!-- 工具按钮 -->
+        <div class="toolbar-group">
+            <span class="toolbar-label">工具</span>
+            <button class="tool-btn active" data-tool="Wwwc" title="窗宽窗位 (左键默认)">
+                <span class="icon">☀</span><span class="label">窗宽窗位</span>
+            </button>
+            <button class="tool-btn" data-tool="Pan" title="平移 (右键)">
+                <span class="icon">✋</span><span class="label">平移</span>
+            </button>
+            <button class="tool-btn" data-tool="Zoom" title="缩放 (中键/滚轮+Ctrl)">
+                <span class="icon">🔍</span><span class="label">缩放</span>
+            </button>
+            <button class="tool-btn" data-tool="Length" title="长度测量">
+                <span class="icon">📏</span><span class="label">长度</span>
+            </button>
+            <button class="tool-btn" data-tool="Angle" title="角度测量">
+                <span class="icon">📐</span><span class="label">角度</span>
+            </button>
+            <button class="tool-btn" data-tool="EllipticalRoi" title="椭圆 ROI">
+                <span class="icon">⭕</span><span class="label">椭圆 ROI</span>
+            </button>
+            <button class="tool-btn" data-tool="ArrowAnnotate" title="箭头标注">
+                <span class="icon">➡</span><span class="label">标注</span>
+            </button>
+        </div>
+
+        <div class="toolbar-separator"></div>
+
+        <!-- 操作按钮 -->
+        <div class="toolbar-group">
+            <button class="tool-btn" id="resetViewBtn" title="重置视图">
+                <span class="icon">↺</span><span class="label">重置</span>
+            </button>
+            <button class="tool-btn" id="toggleOverlay" title="切换信息叠加层">
+                <span class="icon">📋</span><span class="label">信息</span>
+            </button>
+            <button class="tool-btn" id="clearMeasurementsBtn" title="清除测量">
+                <span class="icon">🗑</span><span class="label">清除</span>
+            </button>
+            <button class="tool-btn" id="exportBtn" title="导出影像" style="color:var(--text-success);">
+                <span class="icon">📤</span><span class="label">导出</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========== 主体 ========== -->
+    <div class="app-body">
+
+        <!-- 左侧面板 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <span>序列列表</span>
+                    <span id="seriesCount" class="action-btn">0</span>
                 </div>
-                <div class="marker-list-sidebar" id="markerList">
-                    <h3>标记列表</h3>
-                    <div id="markerItems"></div>
+                <div class="series-list" id="seriesList">
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
+                        暂无数据<br>点击下方按钮导入 DICOM 文件夹
+                    </div>
                 </div>
             </div>
 
-            <!-- 右侧图像容器 -->
-            <div class="image-area">
-                <div class="image-container" id="imageContainer">
-                    <img id="medicalImage" alt="医学影像">
-                    <canvas id="markerCanvas"></canvas>
+            <!-- 导入区域 -->
+            <div class="import-area">
+                <button class="import-btn" id="importBtn">
+                    <span class="icon">📂</span>
+                    <span>导入 DICOM 文件夹</span>
+                </button>
+                <input type="file" id="folderInput" webkitdirectory multiple accept=".dcm,.dicom">
+                <div style="margin-top: 8px; text-align: center;">
+                    <button class="tool-btn" id="prevSliceBtn" title="上一张 (←)">◀</button>
+                    <span id="statusSlice" style="margin: 0 8px; font-size: 12px; color: var(--text-muted);">0/0</span>
+                    <button class="tool-btn" id="nextSliceBtn" title="下一张 (→)">▶</button>
                 </div>
             </div>
-        </div>
+        </aside>
+
+        <!-- 视口区域 -->
+        <main class="viewport-area">
+            <div class="viewport-grid layout-1x1" id="viewportGrid">
+                <!-- 视口由 JavaScript 动态生成 -->
+            </div>
+        </main>
     </div>
 
-
-    <!-- 标记编辑框 -->
-    <div id="editDrawer">
-        <h3>编辑标记</h3>
-        <div class="field">
-            <label>名称</label>
-            <input type="text" id="editName">
+    <!-- ========== 底部状态栏 ========== -->
+    <footer class="statusbar">
+        <div class="statusbar-item">
+            <span class="label">切片:</span>
+            <span class="value" id="statusSlice">0/0</span>
         </div>
-        <div class="field">
-            <label>描述</label>
-            <textarea id="editDesc" rows="3"></textarea>
+        <div class="statusbar-item">
+            <span class="label">W:</span>
+            <span class="value" id="statusWW">-</span>
         </div>
-        <div class="field">
-            <label>颜色</label>
-            <input type="color" id="editColor" class="color-preview">
+        <div class="statusbar-item">
+            <span class="label">L:</span>
+            <span class="value" id="statusWL">-</span>
         </div>
-        <button id="saveMarkerEdit">保存</button>
-    </div>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <span class="neon-signature">SiiNouBeea</span>
-                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
-            </div>
+        <div class="statusbar-item">
+            <span class="label">缩放:</span>
+            <span class="value" id="statusZoom">-</span>
+        </div>
+        <div class="statusbar-right">
+            <span style="font-size: 11px; color: var(--text-muted);">
+                ← → 翻片  ·  滚轮 切层  ·  左键 窗宽窗位  ·  右键 平移  ·  R 重置  ·  Space 播放  ·  O 叠加层
+            </span>
         </div>
     </footer>
 
-    <script src="../../js/main.js"></script>
-    <script src="js/ImageViewer.js"></script>
+    <!-- ========== 应用脚本 ========== -->
+    <script src="js/state.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/viewportManager.js"></script>
+    <script src="js/overlay.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
