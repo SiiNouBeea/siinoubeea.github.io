@@ -425,14 +425,74 @@ ul, ol {
   border-radius: 2px;
 }
 
-/* ---------- Hero 区域 ---------- */
+/* ---------- Hero 区域（三维字符特效） ---------- */
 .hero {
-  background: var(--brand-gradient);
+  background: radial-gradient(circle at 50% 40%, #141a2e 0%, #06070c 72%);
   color: var(--text-light);
-  padding: 100px 0 60px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   position: relative;
   overflow: hidden;
+}
+
+/* 三维特效画布：铺满 Hero，作为背景层 */
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  will-change: opacity, transform;
+  cursor: grab;
+  touch-action: none;
+}
+.hero-canvas:active { cursor: grabbing; }
+
+/* 屏幕阅读器专用（保留语义与 SEO） */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hero 前景内容层（随滚动淡出） */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 9vh;
+  will-change: opacity;
+}
+
+.hero-scroll-hint {
+  margin-top: 20px;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.6);
+  animation: heroHintBob 2.2s ease-in-out infinite;
+}
+
+@keyframes heroHintBob {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50%      { transform: translateY(7px); opacity: 1; }
+}
+
+/* 大屏下副标题稍微靠下，避免与居中的三维文字重叠 */
+@media (min-width: 769px) {
+  .hero-subtitle { margin-bottom: 6vh; }
 }
 
 .hero::before {

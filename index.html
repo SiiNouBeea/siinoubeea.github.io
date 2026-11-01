@@ -24,11 +24,13 @@
         </div>
     </nav>
 
-    <!-- ========== Hero 区域 ========== -->
+    <!-- ========== Hero 区域（三维字符特效） ========== -->
     <header class="hero">
-        <div class="container">
-            <h1 class="animate-on-scroll">SiiNouBeea 项目展示</h1>
-            <p class="animate-on-scroll delay-1">欢迎来到我的项目主页 — 记录学习、探索与创造</p>
+        <canvas id="hero-canvas" class="hero-canvas"></canvas>
+        <h1 class="sr-only">SiiNouBeea 项目展示</h1>
+        <div class="hero-overlay">
+            <p class="hero-subtitle">欢迎来到我的项目主页 — 记录学习、探索与创造</p>
+            <div class="hero-scroll-hint">向下滚动探索更多 ↓</div>
         </div>
     </header>
 
@@ -203,5 +205,292 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+    /* ============================================================
+       首页 Hero 三维字符特效（优化版：精灵图烘焙 + 滚动淡出）
+       核心优化：把「字符 × 色相」组合只渲染一次成贴图，
+       每帧仅做 drawImage（避免逐字符解析字体/颜色），
+       滚动时整体淡出，完全离开视口后暂停渲染以省 CPU。
+       ============================================================ */
+    (function () {
+      'use strict';
+
+      var canvas = document.getElementById('hero-canvas');
+      var overlay = document.querySelector('.hero-overlay');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      var reduceMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var W = 0, H = 0;
+      function resize() {
+        W = canvas.clientWidth || window.innerWidth;
+        H = canvas.clientHeight || window.innerHeight;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+      }
+      window.addEventListener('resize', resize);
+
+      /* ---------- 字符集 + 光照档位（模拟光照渐变，无随机色） ---------- */
+      var GLYPHS = '★●◆✦✧▱◈❖■▲△○□#&@+*≡◐◑♥'.split('');
+      var LIGHT_STEPS = 16;   // 把光照强度离散成 16 档，烘焙成不同亮度的精灵
+      var SPRITE_RES = 64;
+
+      // 固定光照方向（视空间：左上前），随文字旋转产生渐变高光
+      var Lx = -0.353, Ly = -0.505, Lz = 0.788;
+      var AMBIENT = 0.22;
+
+      /* ---------- 精灵图：每个「字符 × 光照档」只画一次 ----------
+         颜色由光照亮度决定：暗→亮 对应 蓝(218)→紫(269)→粉(320)，
+         形成贴合品牌色的有序光照渐变，而非随机色。 ---------- */
+      var sprites = [];
+      (function buildSprites() {
+        for (var gi = 0; gi < GLYPHS.length; gi++) {
+          for (var li = 0; li < LIGHT_STEPS; li++) {
+            var t = LIGHT_STEPS === 1 ? 0 : li / (LIGHT_STEPS - 1);
+            var hue = 218 + t * 102;     // 218(蓝) → 320(粉)
+            var lum = 30 + t * 58;       // 30% → 88%
+            var c = document.createElement('canvas');
+            c.width = c.height = SPRITE_RES;
+            var x = c.getContext('2d');
+            x.fillStyle = 'hsl(' + hue + ', 82%, ' + lum + '%)';
+            x.shadowColor = 'hsl(' + hue + ', 90%, ' + Math.min(92, lum + 6) + '%)';
+            x.shadowBlur = 6;
+            x.font = 'bold ' + Math.floor(SPRITE_RES * 0.74) +
+                     'px "PingFang SC","Microsoft YaHei",sans-serif';
+            x.textAlign = 'center';
+            x.textBaseline = 'middle';
+            x.fillText(GLYPHS[gi], SPRITE_RES / 2, SPRITE_RES / 2 + 2);
+            sprites[gi * LIGHT_STEPS + li] = c;
+          }
+        }
+      })();
+
+      /* ---------- 把文字采样成点云 ---------- */
+      var points = [];
+      function buildPoints(text) {
+        var off = document.createElement('canvas');
+        var o = off.getContext('2d');
+        var FONT = 'bold 200px "PingFang SC","Microsoft YaHei",sans-serif';
+        o.font = FONT;
+        var m = o.measureText(text);
+        var pad = 60;
+        off.width = Math.ceil(m.width) + pad * 2;
+        off.height = 280;
+        o.font = FONT;
+        o.fillStyle = '#fff';
+        o.textAlign = 'center';
+        o.textBaseline = 'middle';
+        o.fillText(text, off.width / 2, off.height / 2);
+
+        var data = o.getImageData(0, 0, off.width, off.height).data;
+        var step = Math.max(2, Math.round(off.width / 200));  // 更密采样，配合更小的单元
+        var cx = off.width / 2, cy = off.height / 2;
+        var scale = Math.max(off.width, off.height) / 2;
+        var raw = [];
+        for (var y = 0; y < off.height; y += step) {
+          for (var x = 0; x < off.width; x += step) {
+            if (data[(y * off.width + x) * 4 + 3] > 128) {
+              raw.push(x, y);
+            }
+          }
+        }
+        points = new Array(raw.length / 2);
+        for (var i = 0, k = 0; i < raw.length; i += 2, k++) {
+          var px = raw[i], py = raw[i + 1];
+          var nx = (px - cx) / scale;
+          var ny = (py - cy) / scale;
+          // 把每个点视作微凸表面：法线朝外微微倾斜，形成光照渐变
+          var nlen = Math.sqrt(nx * nx * 0.25 + ny * ny * 0.25 + 1);
+          // 飞散方向（球面均匀随机），滚动时字符沿此方向四散开来
+          var sa = Math.random() * Math.PI * 2;
+          var sr = 0.6 + Math.random() * 1.5;
+          points[k] = {
+            x: nx,
+            y: ny,
+            z: (Math.random() - 0.5) * 0.18,   // 减小厚度，文字更薄
+            nx: (nx * 0.5) / nlen,
+            ny: (ny * 0.5) / nlen,
+            nz: 1 / nlen,
+            ox: Math.cos(sa) * sr,
+            oy: Math.sin(sa) * sr,
+            oz: (Math.random() - 0.5) * 1.6,
+            gi: (Math.random() * GLYPHS.length) | 0,
+            s: 0.82 + Math.random() * 0.22      // 单元更小、大小变化更收敛
+          };
+        }
+      }
+
+      /* ---------- 交互状态 ---------- */
+      var rotX = -0.12, rotY = 0, targetX = -0.12, targetY = 0;
+      var zoom = 1, targetZoom = 1;
+      var dragging = false, lastX = 0, lastY = 0, auto = true;
+
+      canvas.addEventListener('pointerdown', function (e) {
+        dragging = true; auto = false;
+        lastX = e.clientX; lastY = e.clientY;
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+      canvas.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        targetY += (e.clientX - lastX) * 0.008;
+        targetX += (e.clientY - lastY) * 0.006;
+        if (targetX > 1.2) targetX = 1.2; else if (targetX < -1.2) targetX = -1.2;
+        lastX = e.clientX; lastY = e.clientY;
+      });
+      function endDrag(e) {
+        dragging = false;
+        setTimeout(function () { if (!dragging) auto = true; }, 2200);
+        try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+      canvas.addEventListener('pointerup', endDrag);
+      canvas.addEventListener('pointercancel', endDrag);
+
+      /* ---------- 主循环 ---------- */
+      var t = 0;
+      var running = true;
+      var looping = false;
+      var disp = 0;   // 滚动飞散进度：0=顶部(完整) → 1=滚离(四散+背景变亮)
+
+      // 平滑缓动（用于滚动飞散/背景变亮的过渡）
+      function smooth(v) {
+        if (v < 0) v = 0; else if (v > 1) v = 1;
+        return v * v * (3 - 2 * v);
+      }
+
+      function frame() {
+        if (!running) { looping = false; return; }
+        looping = true;
+        t += 1;
+
+        if (auto && !dragging && !reduceMotion) targetY += 0.0045;
+        rotX += (targetX - rotX) * 0.09;
+        rotY += (targetY - rotY) * 0.09;
+        zoom += (targetZoom - zoom) * 0.1;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // 背景：随滚动从深色插值到页面浅色（disp→1 逐渐变亮）
+        var ed = smooth(disp);
+        var br = Math.round(10 + (248 - 10) * ed);
+        var bgc = Math.round(12 + (249 - 12) * ed);
+        var bb = Math.round(20 + (250 - 20) * ed);
+        ctx.fillStyle = 'rgb(' + br + ',' + bgc + ',' + bb + ')';
+        ctx.fillRect(0, 0, W, H);
+        // 顶部深色微光随飞散淡出
+        if (ed < 0.999) {
+          var glowA = (1 - ed) * 0.55;
+          var bg = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, Math.max(W, H) * 0.7);
+          bg.addColorStop(0, 'rgba(40,60,110,' + glowA + ')');
+          bg.addColorStop(1, 'rgba(40,60,110,0)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, W, H);
+        }
+
+        var cx = W / 2, cy = H / 2;
+        var base = Math.min(W, H) * 0.62 * zoom;
+        var cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        var cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+
+        // 投影 + 法线旋转 + 光照（仅数学运算，颜色由亮度档位查表得到）
+        var proj = new Array(points.length);
+        for (var i = 0; i < points.length; i++) {
+          var p = points[i];
+          // 位置旋转
+          var x = p.x * cosY - p.z * sinY;
+          var z = p.x * sinY + p.z * cosY;
+          var y = p.y * cosX - z * sinX;
+          z = p.y * sinX + z * cosX;
+          // 飞散：沿各自方向沿 Z 前后错开
+          var zz = z + p.oz * ed;
+          var persp = 1 / (1 + zz * 0.55);
+          // 法线同样旋转，用于计算光照
+          var nx1 = p.nx * cosY - p.nz * sinY;
+          var nz1 = p.nx * sinY + p.nz * cosY;
+          var ny1 = p.ny * cosX - nz1 * sinX;
+          var nz2 = p.ny * sinX + nz1 * cosX;
+          var nd = nx1 * Lx + ny1 * Ly + nz2 * Lz;   // 漫反射系数
+          if (nd < 0) nd = 0;
+          // 镜面高光（视向量 ≈ (0,0,1)）
+          var rz = 2 * nd * nz2 - Lz;
+          if (rz < 0) rz = 0;
+          var spec = Math.pow(rz, 18) * 0.5;
+          var lv = AMBIENT + nd * (1 - AMBIENT) + spec;
+          if (lv > 1) lv = 1; else if (lv < 0) lv = 0;
+          var li = (lv * (LIGHT_STEPS - 1)) | 0;
+          if (li < 0) li = 0; else if (li >= LIGHT_STEPS) li = LIGHT_STEPS - 1;
+
+          // 飞散：沿各自方向在平面内向外扩散
+          proj[i] = {
+            X: cx + x * base * persp + p.ox * base * ed,
+            Y: cy + y * base * persp + p.oy * base * ed,
+            Z: zz,
+            size: base * 0.03 * p.s * persp * (1 - 0.35 * ed),
+            gi: p.gi,
+            li: li,
+            fade: 1 - ed
+          };
+        }
+
+        // 远的先画（画家算法）
+        proj.sort(function (a, b) { return b.Z - a.Z; });
+
+        for (var j = 0; j < proj.length; j++) {
+          var q = proj[j];
+          if (q.size < 1) continue;
+          var depth = (q.Z + 0.5);            // 0(近) ~ 1(远)
+          if (depth < 0) depth = 0; else if (depth > 1) depth = 1;
+          var alpha = (0.92 - depth * 0.4) * q.fade;   // 飞散时整体淡出
+          if (alpha < 0.02) continue;
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(sprites[q.gi * LIGHT_STEPS + q.li],
+            q.X - q.size / 2, q.Y - q.size / 2, q.size, q.size);
+        }
+        ctx.globalAlpha = 1;
+
+        requestAnimationFrame(frame);
+      }
+
+      function startLoop() {
+        if (looping) return;
+        if (reduceMotion) { running = false; frame(); return; }
+        requestAnimationFrame(frame);
+      }
+
+      /* ---------- 滚动淡出 ---------- */
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          var y = window.scrollY || window.pageYOffset || 0;
+          var vh = window.innerHeight || 1;
+          var p = 1 - y / (vh * 0.9);
+          if (p < 0) p = 0; else if (p > 1) p = 1;
+          disp = 1 - p;                         // 0=顶部(完整) → 1=滚离(四散+背景变亮)
+          canvas.style.opacity = 1;              // 不再整体淡出，交由飞散+背景变亮处理
+          canvas.style.transform = 'none';
+          if (overlay) overlay.style.opacity = p < 0.6 ? (p / 0.6) : 0;  // 副标题更早淡出
+          if (!reduceMotion) {
+            var wasRunning = running;
+            running = p > 0.02;
+            if (running && !wasRunning) startLoop();
+          }
+          ticking = false;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---------- 初始化 ---------- */
+      resize();
+      buildPoints('SiiNouBeea');
+      onScroll();
+      startLoop();
+    })();
+    </script>
 </body>
 </html>
