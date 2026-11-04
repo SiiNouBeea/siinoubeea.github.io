@@ -36,3 +36,6 @@ Thumbs.db
 *.pdf
 *.pptx
 *.xlsx
+# 本地测试与工作台数据
+.tmp_test/
+.workbuddy/

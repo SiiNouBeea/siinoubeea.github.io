@@ -19,6 +19,7 @@
             </a>
             <div class="nav-links">
                 <a href="/" class="nav-link active">主页</a>
+                <a href="#tools" class="nav-link nav-link-tool">奇怪小工具</a>
             </div>
             <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
         </div>
@@ -36,6 +37,44 @@
 
     <!-- ========== 主要内容 ========== -->
     <main class="container">
+        <!-- 奇怪小工具（置顶优先展示） -->
+        <section class="projects" id="tools">
+            <h2 class="section-title">奇怪小工具</h2>
+
+            <div class="project-category featured animate-on-scroll">
+                <h3>数据处理</h3>
+                <div class="project-grid">
+                    <div class="project-card card-new">
+                        <h4>Excel / CSV 合并工具
+                            <span class="card-badge">NEW</span>
+                        </h4>
+                        <p class="project-description">把多个 xlsx 流式转成 CSV 再合并成一个文件，也可以只转 CSV、或只合并已有 CSV。表头不一致时按列名对齐，日期自动还原，18 位就诊流水号不丢精度，几百万行也不会把内存撑爆 —— 全部在浏览器本地完成，文件不上传。</p>
+                        <div class="project-links">
+                            <a href="HandsOn/小组件/ExcelMerge.html" class="btn btn-primary">立即使用</a>
+                        </div>
+                        <div class="project-tags">
+                            <span class="tag">Excel</span>
+                            <span class="tag">CSV</span>
+                            <span class="tag">流式处理</span>
+                            <span class="tag">本地运行</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h4>Markdown浏览器</h4>
+                        <p class="project-description">在网页上浏览Markdown文件。</p>
+                        <div class="project-links">
+                            <a href="HandsOn/小组件/MDV.html" target="_blank" class="btn btn-primary">立即进入</a>
+                        </div>
+                        <div class="project-tags">
+                            <span class="tag">Markdown</span>
+                            <span class="tag">在线</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 个人项目 -->
         <section class="projects">
             <h2 class="section-title">个人项目</h2>
@@ -160,22 +199,6 @@
                 </div>
             </div>
 
-            <div class="project-category animate-on-scroll delay-1">
-                <h3>奇怪小工具</h3>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <h4>Markdown浏览器</h4>
-                        <p class="project-description">在网页上浏览Markdown文件。</p>
-                        <div class="project-links">
-                            <a href="HandsOn/小组件/MDV.html" target="_blank" class="btn btn-primary">立即进入</a>
-                        </div>
-                        <div class="project-tags">
-                            <span class="tag">Markdown</span>
-                            <span class="tag">在线</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- 关于我 -->

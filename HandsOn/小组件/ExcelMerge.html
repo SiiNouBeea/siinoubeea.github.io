@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../img/logo.png">
+    <title>Excel / CSV 合并工具 - SiiNouBeea</title>
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/style_excelmerge.css">
+</head>
+<body class="tool-page">
+
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-logo">
+                <img src="../../img/logo.png" alt="SiiNouBeea" class="nav-logo-img">
+                <span>SiiNouBeea</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html" class="nav-link">主页</a>
+                <a href="../../index.html#tools" class="nav-link active">奇怪小工具</a>
+            </div>
+            <button class="nav-toggle" aria-label="菜单" aria-expanded="false">☰</button>
+        </div>
+    </nav>
+
+    <main class="tool-main">
+        <div class="container">
+
+            <!-- ========== 页头 ========== -->
+            <header class="tool-header">
+                <nav class="breadcrumb" aria-label="位置">
+                    <a href="../../index.html">主页</a>
+                    <span class="separator">/</span>
+                    <a href="../../index.html#tools">奇怪小工具</a>
+                    <span class="separator">/</span>
+                    <span class="current">Excel 合并</span>
+                </nav>
+
+                <h1 class="tool-title">Excel / CSV 合并工具</h1>
+                <p class="tool-subtitle">
+                    把多个 xlsx 先流式转成 CSV、再合并成一个文件；也可以只转 CSV，或只合并已有 CSV。
+                    表头不一致时按列名对齐，日期自动还原，18 位流水号不会丢精度。
+                </p>
+
+                <div class="tool-badges">
+                    <span class="tool-badge">🔒 全程本地处理，文件不上传</span>
+                    <span class="tool-badge">🌊 流式读写，几百万行也不爆内存</span>
+                    <span class="tool-badge">🧩 多工作表 · 超 104 万行自动分表</span>
+                </div>
+
+                <p class="tool-tip" id="capTip" hidden></p>
+                <p class="tool-tip" id="saveTip" hidden></p>
+            </header>
+
+            <div class="tool-grid">
+
+                <!-- ---------- 左列：文件 + 选项 ---------- -->
+                <div class="tool-col">
+
+                    <section class="panel">
+                        <h2 class="panel-title"><span class="step">1</span>选择文件</h2>
+
+                        <div class="dropzone" id="dropZone">
+                            <div class="dropzone-inner">
+                                <span class="dropzone-icon">📂</span>
+                                <p class="dropzone-text">把 <strong>xlsx</strong> / <strong>csv</strong> 文件或整个文件夹拖到这里</p>
+                                <p class="dropzone-sub" id="fileHint">尚未选择文件，可直接把文件或文件夹拖到这里</p>
+                                <div class="dropzone-actions">
+                                    <button type="button" class="btn btn-primary btn-sm" id="pickFiles">添加文件</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="pickFolder">添加文件夹</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="pickCsv">添加已有 CSV</button>
+                                    <button type="button" class="btn btn-ghost btn-sm" id="clearFiles">清空</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ul class="file-list" id="fileList"></ul>
+
+                        <input type="file" id="inputFiles" accept=".xlsx,.xlsm,.csv" multiple hidden>
+                        <input type="file" id="inputFolder" webkitdirectory directory multiple hidden>
+                        <input type="file" id="inputCsv" accept=".csv" multiple hidden>
+                    </section>
+
+                    <section class="panel">
+                        <h2 class="panel-title"><span class="step">2</span>选项</h2>
+
+                        <div class="option-grid">
+                            <label class="option">
+                                <span class="option-label">工作表</span>
+                                <select id="optSheet">
+                                    <option value="all">全部工作表（多 sheet 逐个追加）</option>
+                                    <option value="first">仅每个文件的第 1 个工作表</option>
+                                </select>
+                            </label>
+
+                            <label class="option">
+                                <span class="option-label">日期</span>
+                                <select id="optDate">
+                                    <option value="smart">智能（有时间的才带时分秒）</option>
+                                    <option value="full">强制完整日期时间</option>
+                                    <option value="raw">保留 Excel 原始序列号</option>
+                                </select>
+                            </label>
+
+                            <label class="option">
+                                <span class="option-label">CSV 编码</span>
+                                <select id="optEncoding">
+                                    <option value="utf-8">UTF-8（无 BOM，推荐系统导入）</option>
+                                    <option value="utf-8-sig">UTF-8 带 BOM（Excel 双击不乱码）</option>
+                                    <option value="gbk">GBK（老系统 / Excel 另存习惯）</option>
+                                </select>
+                            </label>
+
+                            <label class="option">
+                                <span class="option-label">输出格式</span>
+                                <select id="optFormat">
+                                    <option value="csv">CSV（推荐，无行数上限）</option>
+                                    <option value="xlsx">Excel 工作簿 .xlsx（超 104 万行自动分表）</option>
+                                </select>
+                                <span class="option-hint" id="formatHint">CSV：无行数上限，推荐</span>
+                            </label>
+                        </div>
+
+                        <div class="option-checks">
+                            <label class="checkbox">
+                                <input type="checkbox" id="optSource">
+                                <span>加「来源文件」列</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="optParts">
+                                <span>保留中间 CSV（结束后可下载）</span>
+                            </label>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ---------- 右列：执行 + 进度 + 结果 ---------- -->
+                <div class="tool-col">
+                    <section class="panel panel-run">
+                        <h2 class="panel-title"><span class="step">3</span>开始处理</h2>
+
+                        <div class="run-actions">
+                            <button type="button" class="btn btn-primary btn-block" id="btnRun">
+                                转换并合并（xlsx → CSV → 一个文件）
+                            </button>
+                            <div class="run-row">
+                                <button type="button" class="btn btn-secondary" id="btnToCsv">仅转 CSV</button>
+                                <button type="button" class="btn btn-secondary" id="btnMergeCsv">仅合并已有 CSV</button>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-block" id="btnCancel" disabled>取消</button>
+                        </div>
+
+                        <div class="progress-wrap">
+                            <div class="bar"><div class="bar-fill"></div></div>
+                            <div class="progress-meta">
+                                <span class="stage-text" id="stageText">就绪</span>
+                                <span class="pct-text" id="pctText">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="result" id="resultPanel" hidden>
+                            <div class="result-body" id="resultBody"></div>
+                        </div>
+
+                        <ul class="run-notes">
+                            <li>开始时会先让你选保存位置（Chrome / Edge），和桌面版「另存为」一致。</li>
+                            <li>「仅转 CSV」输出多个文件；支持选文件夹时直接写进去。</li>
+                            <li>中间结果写在浏览器私有文件系统里，结束自动清理。</li>
+                        </ul>
+                    </section>
+
+                    <section class="panel panel-tips">
+                        <h2 class="panel-title">小贴士</h2>
+                        <ul class="tips-list">
+                            <li><strong>表头对不齐？</strong>工具按列名匹配，列顺序不一致也能对上；对不上的留空。</li>
+                            <li><strong>就诊流水号变科学计数？</strong>15 位以上的数字一律按文本输出，不会走浮点。</li>
+                            <li><strong>数据特别大？</strong>推荐输出 CSV；xlsx 超过 104 万行会自动拆成「数据2、数据3」。</li>
+                            <li><strong>老 .xls 文件？</strong>先用 Excel 另存为 .xlsx 再拖进来。</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ---------- 日志 ---------- -->
+            <section class="panel panel-log">
+                <h2 class="panel-title">
+                    日志
+                    <button type="button" class="log-clear" id="clearLog">清空</button>
+                </h2>
+                <div class="log-box" id="logBox"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/SiiNouBeea" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://space.bilibili.com/498538389" target="_blank" rel="noopener">BiliBili</a>
+                </div>
+                <span class="neon-signature">SiiNouBeea</span>
+                <p class="footer-copyright">© 2025 SiiNouBeea. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/excel_merge/app.js"></script>
+    <script src="../../js/main.js"></script>
+</body>
+</html>

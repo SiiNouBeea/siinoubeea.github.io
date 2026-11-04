@@ -43,6 +43,47 @@ main > section {
   margin-right: var(--space-sm);
 }
 
+/* ---------- 置顶分类（奇怪小工具） ---------- */
+.project-category.featured {
+  position: relative;
+  border-color: rgba(102, 126, 234, 0.35);
+  box-shadow: 0 6px 26px rgba(102, 126, 234, 0.12);
+  background:
+    linear-gradient(180deg, rgba(102, 126, 234, 0.05) 0%, rgba(255, 255, 255, 0) 120px),
+    var(--bg-card);
+}
+
+.project-category.featured h3 {
+  border-left-color: var(--brand-secondary);
+}
+
+/* 新工具标记 */
+.project-card.card-new h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.card-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b6b, #f368e0);
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 8px rgba(243, 104, 224, 0.35);
+}
+
+/* 导航栏上的工具入口 */
+.nav-link-tool::before {
+  content: '🧰';
+  margin-right: 4px;
+  font-size: 0.9em;
+}
+
 /* ---------- 项目网格 ---------- */
 .project-grid {
   display: grid;
