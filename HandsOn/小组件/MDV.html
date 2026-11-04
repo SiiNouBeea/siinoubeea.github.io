@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../../img/logo.png">
-    <title>Markdown文件查看器</title>
+    <title>Markdown 工作台</title>
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/style_mdv.css">
 </head>
@@ -23,39 +23,105 @@
         </div>
     </nav>
 
-    <div class="container">
-        <!-- 顶部工具栏 -->
-        <div class="toolbar">
-            <h1>Markdown文件查看器</h1>
-            <div class="controls">
-                <input type="file" id="fileInput" accept=".md,.txt" multiple>
-                <label for="fileInput" class="file-input-label">选择文件</label>
-                <button id="toggleView" class="toggle-btn">切换双列视图</button>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <!-- 左侧导航栏 -->
-            <div class="sidebar">
-                <h2>文件列表</h2>
-                <ul id="fileList" class="file-list">
-                    <!-- 文件列表将在这里动态生成 -->
-                </ul>
-            </div>
-
-            <!-- 主内容区域 -->
-            <div class="content-area">
-                <div id="singleColumn" class="single-column">
-                    <!-- 单列模式下显示的内容 -->
-                </div>
-                <div id="doubleColumn" class="double-column hidden">
-                    <!-- 双列模式下显示的内容 -->
-                    <div class="column" id="leftColumn"></div>
-                    <div class="column" id="rightColumn"></div>
+    <div class="mdv-app" id="mdvApp">
+        <!-- ========== 左侧文件栏 ========== -->
+        <aside class="mdv-sidebar" id="mdvSidebar">
+            <div class="mdv-sidebar-head">
+                <h2>文件</h2>
+                <div class="mdv-sidebar-actions">
+                    <button id="btnNewFile" class="icon-btn" title="新建文档">＋</button>
+                    <input type="file" id="fileInput" accept=".md,.markdown,.txt" multiple hidden>
+                    <button id="btnImport" class="icon-btn" title="导入文件">⬆</button>
+                    <button id="btnExportAll" class="icon-btn" title="全部导出下载">⬇</button>
                 </div>
             </div>
-        </div>
+            <ul id="fileList" class="mdv-file-list"></ul>
+            <div class="mdv-sidebar-tip">提示：也可把 .md / .txt 文件直接拖进页面</div>
+        </aside>
+        <div class="mdx-resizer mdx-resizer-v" id="sidebarResizer" title="拖动调整宽度"></div>
+
+        <!-- ========== 右侧工作区 ========== -->
+        <main class="mdv-workspace">
+            <!-- 标签页 -->
+            <div class="mdv-tabsbar" id="tabsBar"></div>
+
+            <!-- 模式切换 -->
+            <div class="mdv-modebar">
+                <div class="mdv-modes" id="modeSwitch">
+                    <button data-mode="edit" class="mode-btn active" title="编辑 + 实时预览">✎ 编辑</button>
+                    <button data-mode="read" class="mode-btn" title="纯阅读">☰ 阅读</button>
+                    <button data-mode="dual" class="mode-btn" title="双文件对照">⬓ 对照</button>
+                </div>
+                <div class="mdv-mode-actions">
+                    <button id="btnDownload" class="mini-btn" title="下载当前文档 (Ctrl+S)">保存下载</button>
+                    <button id="btnSidebarToggle" class="mini-btn" title="收起/展开文件栏">◧ 文件栏</button>
+                </div>
+            </div>
+
+            <!-- 编辑工具栏（仅编辑模式） -->
+            <div class="mdv-fmt" id="fmtToolbar">
+                <button data-fmt="bold" title="加粗 (Ctrl+B)"><b>B</b></button>
+                <button data-fmt="italic" title="斜体 (Ctrl+I)"><i>I</i></button>
+                <button data-fmt="strike" title="删除线"><s>S</s></button>
+                <button data-fmt="code" title="行内代码">&lt;/&gt;</button>
+                <span class="mdv-fmt-sep"></span>
+                <button data-fmt="h1" title="一级标题">H1</button>
+                <button data-fmt="h2" title="二级标题">H2</button>
+                <button data-fmt="h3" title="三级标题">H3</button>
+                <span class="mdv-fmt-sep"></span>
+                <button data-fmt="quote" title="引用">❝</button>
+                <button data-fmt="ul" title="无序列表">•≡</button>
+                <button data-fmt="ol" title="有序列表">1≡</button>
+                <button data-fmt="task" title="任务列表">☑</button>
+                <span class="mdv-fmt-sep"></span>
+                <button data-fmt="link" title="链接">🔗</button>
+                <button data-fmt="image" title="图片">🖼</button>
+                <button data-fmt="table" title="插入表格">▦</button>
+                <button data-fmt="codeblock" title="代码块">{ }</button>
+                <button data-fmt="hr" title="分割线">―</button>
+            </div>
+
+            <!-- ===== 编辑模式：编辑器 | 预览 ===== -->
+            <div class="mdv-panes" id="panesEdit">
+                <div class="mdv-editor-pane" id="editorPane">
+                    <textarea id="editor" spellcheck="false" placeholder="开始编写 Markdown…（左侧栏可新建/导入文件）"></textarea>
+                </div>
+                <div class="mdx-resizer mdx-resizer-v" id="editResizer" title="拖动调整编辑/预览比例"></div>
+                <div class="mdv-preview-pane" id="previewEditPane">
+                    <div id="previewEdit" class="markdown-content"></div>
+                </div>
+            </div>
+
+            <!-- ===== 阅读模式 ===== -->
+            <div class="mdv-panes mdv-panes-read hidden" id="panesRead">
+                <div class="mdv-preview-pane mdv-preview-full">
+                    <div id="previewRead" class="markdown-content"></div>
+                </div>
+            </div>
+
+            <!-- ===== 对照模式：双列可拖放 ===== -->
+            <div class="mdv-panes mdv-panes-dual hidden" id="panesDual">
+                <div class="mdv-dual-col" id="dualLeft" data-col="left">
+                    <div class="mdv-dual-hint" data-col="left">把左侧文件拖到这里</div>
+                    <div class="markdown-content" id="dualLeftBody"></div>
+                </div>
+                <div class="mdx-resizer mdx-resizer-v" id="dualResizer" title="拖动调整左右比例"></div>
+                <div class="mdv-dual-col" id="dualRight" data-col="right">
+                    <div class="mdv-dual-hint" data-col="right">把左侧文件拖到这里</div>
+                    <div class="markdown-content" id="dualRightBody"></div>
+                </div>
+            </div>
+
+            <!-- 状态栏 -->
+            <div class="mdv-statusbar">
+                <span id="statInfo">就绪</span>
+                <span id="statSave">已自动保存</span>
+            </div>
+        </main>
     </div>
+
+    <!-- 全屏拖放遮罩 -->
+    <div id="dropOverlay" class="mdv-drop-overlay hidden">松开即可导入文件</div>
 
     <!-- VSX图片预览浮窗 -->
     <div id="vsdxModal" class="vsdx-modal hidden">
